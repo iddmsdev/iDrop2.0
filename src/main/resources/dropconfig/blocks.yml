@@ -1,0 +1,24 @@
+# CONFIGURATION OF DROPS FROM BLOCKS
+enabled: true
+drops:
+  example: # UNIQUE NAME
+    # LIST OR SINGLE STRING
+    blocks: 'stone' # SINGLE STRING
+    # - ''
+    # - ''
+    # LIST EXAMPLE ABOVE
+    item: 'DIAMOND'
+    count-min: 1 # MIN. 1, OPTIONAL (DEFAULT 1)
+    count-max: 6 # MAX 64, OPTIONAL (DEFAULT 64)
+    chance: 50.0 # TYPE IN DOUBLE (xx.xx), OPTIONAL
+    message: '&eDropped: &b&lDIAMOND' # MESSAGE ON DROP
+    experience-min: 20 # OPTIONAL (DEFAULT 1)
+    experience-max: 20 # OPTIONAL (DEFAULT 100)
+    drop-default-block: true
+    pickaxes: # ITEMS WITH YOU CAN DROP THIS ITEM E.G.: DIAMOND PICkAXE, STICK, DIAMOND AXE. IT CAN BE ANY ITEM.
+      enabled: true # IT'S ENABLED?
+      # LIST OR SINGLE STRING
+      items:
+        - 'iron_pickaxe'
+        - 'diamond_pickaxe'
+        - 'netherite_pickaxe'

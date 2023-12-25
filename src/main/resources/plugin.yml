@@ -1,0 +1,7 @@
+name: iDrop
+version: '${project.version}'
+main: pl.iddmsdev.idrop.Main
+api-version: 1.17
+authors: [ iddmsdev ]
+description: Plugin for drop from mobs and blocks
+website: iddms.codeblue-mc.com
