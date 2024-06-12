@@ -1,0 +1,21 @@
+# USED FOR CREATING GENERATORS
+# GENERATORS CONFIG
+recipes-display-type: 'recipes-gui' # GUI or 'chat', if you want GUI just type name of GUI from gen-gui.yml
+list-display-type: 'chat' # GUI or 'chat', if you want GUI just type name of GUI from gen-gui.yml
+
+# GENERATORS
+enabled: true
+generators:
+  stone:
+    base-block: 'end_stone' # A block under generated blocks, leave 'none' if you don't wanna any block under, and just generated blocks.
+    item: 'gold_block' # Item of generator
+    #todo: item options,
+    generate:
+      # SUM OF CHANCES MUST BE EQUALS TO 100
+      stone:
+        chance: 90.0
+        block: 'stone'
+      diamond:
+        chance: 10.0
+        block: 'diamond_ore'
+

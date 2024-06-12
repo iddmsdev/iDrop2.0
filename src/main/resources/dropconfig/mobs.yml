@@ -1,3 +1,17 @@
-# CONFIGURATION OF DROPS FROM MOBS (ELEMENTS DESCRIPTIONS IN blocks.yml)
+# CONFIGURATION OF DROPS FROM MOBS (ELEMENTS DESCRIPTIONS IN blocks.yml, it's very similar)
 enabled: true
 drops:
+  example:
+    mobs:
+      - 'cow'
+      - 'goat'
+    item: 'MILK_BUCKET'
+    count-max: 1
+    chance: 50.0
+    message: '&aIt looks like you got milk :O'
+    experience-min: 20
+    experience-max: 20
+    drop-default-items: true
+    tools:
+      enabled: false
+      items: 'iron_sword'

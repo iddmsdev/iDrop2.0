@@ -1,0 +1,62 @@
+# all of this is explained in gui.yml
+# USED FOR GENERATORS GUI
+
+# if you want you can use variable items (if you e.g. using same items multiple times). if you want to use this in your gui just write
+# name of your item, and next var: 'your_variable_name', for example:
+# example-gui:
+#   title: 'title'
+#   rows: x
+#   items:
+#     variable-item:
+#       var: 'example-variable'
+variables:
+  background:
+    item: 'gray_stained_glass_pane'
+    name: ''
+    action: 'none'
+  background2:
+    item: 'white_stained_glass_pane'
+    name: ''
+    action: 'none'
+
+home-gui:
+  title: '&e&lGenerators'
+  rows: 3
+  items:
+    1:
+      var: 'background'
+    2:
+      var: 'background'
+    3:
+      var: 'background'
+    4:
+      var: 'background'
+    5:
+      var: 'background'
+    6:
+      var: 'background'
+    7:
+      var: 'background'
+    8:
+      var: 'background'
+    9:
+      var: 'background'
+    # end of row 1
+    10:
+
+    11:
+
+    12:
+      var: 'background2'
+    13:
+      var: 'background2'
+    14:
+
+    15:
+      var: 'background2'
+    16:
+      var: 'background2'
+    17:
+
+    18:
+      var: 'background'
