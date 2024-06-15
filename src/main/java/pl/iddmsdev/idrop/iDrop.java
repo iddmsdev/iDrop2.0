@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.iddmsdev.idrop.GUIs.actions.TestAction;
+import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.*;
 import pl.iddmsdev.idrop.drops.BlockDrop;
 import pl.iddmsdev.idrop.drops.MobDrop;
@@ -19,15 +21,17 @@ public final class iDrop extends JavaPlugin {
     public static File dataFolder;
 
     public static File blocks;
-    public static FileConfiguration blocksYML;
-
     public static File config;
-    public static FileConfiguration configYML;
-
     public static File mobs;
-    public static FileConfiguration mobsYML;
     public static File generators;
+    public static File genGUI;
+
+
+    public static FileConfiguration blocksYML;
+    public static FileConfiguration configYML;
+    public static FileConfiguration mobsYML;
     public static FileConfiguration generatorsYML;
+    public static FileConfiguration genGuiYML;
 
     public static boolean blockDroppingDirectlyToInv;
     public static boolean mobDroppingDirectlyToInv;
@@ -39,13 +43,14 @@ public final class iDrop extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        System.out.println("iDrop has just loaded ABV: 5");
+        System.out.println("iDrop has just loaded ABV: 8");
         System.out.println("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles();
         setupListeners();
         setupCommands();
         setupDBs();
+        setupGUIActions();
 
         Generators.compileGenerators();
 
@@ -61,6 +66,10 @@ public final class iDrop extends JavaPlugin {
 
     private void setupDBs() {
         GeneratorsDB.connect();
+    }
+
+    private void setupGUIActions() {
+        iDropGuiInterpreter.registerAction(new TestAction());
     }
 
     private void setupCommands() {
@@ -80,6 +89,8 @@ public final class iDrop extends JavaPlugin {
     }
 
     private void setupListeners() {
+        Bukkit.getPluginManager().registerEvents(new iDropGuiInterpreter(null, null, null), this);
+
         Bukkit.getPluginManager().registerEvents(new BlockDrop(), this);
         Bukkit.getPluginManager().registerEvents(new MobDrop(), this);
 
@@ -87,26 +98,33 @@ public final class iDrop extends JavaPlugin {
     }
 
     private void setupConfigFiles() {
+        // zrobic cos z tym
         blocks = new File(dataFolder, "dropconfig/blocks.yml");
-        blocksYML = YamlConfiguration.loadConfiguration(blocks);
         if(!blocks.exists()) {
             saveResource("dropconfig/blocks.yml", false);
         }
         mobs = new File(dataFolder, "dropconfig/mobs.yml");
-        mobsYML = YamlConfiguration.loadConfiguration(mobs);
         if(!mobs.exists()) {
             saveResource("dropconfig/mobs.yml", false);
         }
         config = new File(dataFolder, "config.yml");
-        configYML = YamlConfiguration.loadConfiguration(config);
         if(!config.exists()) {
             saveResource("config.yml", false);
         }
         generators = new File(dataFolder, "generators/generators.yml");
-        generatorsYML = YamlConfiguration.loadConfiguration(generators);
         if(!generators.exists()) {
             saveResource("generators/generators.yml", false);
         }
+        genGUI = new File(dataFolder, "generators/gen-gui.yml");
+        if(!genGUI.exists()) {
+            saveResource("generators/gen-gui.yml", false);
+        }
+
+        blocksYML = YamlConfiguration.loadConfiguration(blocks);
+        mobsYML = YamlConfiguration.loadConfiguration(mobs);
+        configYML = YamlConfiguration.loadConfiguration(config);
+        generatorsYML = YamlConfiguration.loadConfiguration(generators);
+        genGuiYML = YamlConfiguration.loadConfiguration(genGUI);
 
     }
 
