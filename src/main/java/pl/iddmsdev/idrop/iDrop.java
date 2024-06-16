@@ -4,7 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.iddmsdev.idrop.GUIs.actions.TestAction;
+import pl.iddmsdev.idrop.GUIs.actions.OpenAnotherGUI;
+import pl.iddmsdev.idrop.GUIs.actions.SendChatMessage;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.*;
 import pl.iddmsdev.idrop.drops.BlockDrop;
@@ -69,7 +70,8 @@ public final class iDrop extends JavaPlugin {
     }
 
     private void setupGUIActions() {
-        iDropGuiInterpreter.registerAction(new TestAction());
+        iDropGuiInterpreter.registerAction(new SendChatMessage());
+        iDropGuiInterpreter.registerAction(new OpenAnotherGUI());
     }
 
     private void setupCommands() {

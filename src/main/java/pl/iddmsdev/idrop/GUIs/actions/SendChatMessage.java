@@ -5,7 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import pl.iddmsdev.idrop.GUIs.GUIAction;
 
-public class TestAction implements GUIAction {
+public class SendChatMessage implements GUIAction {
     @Override
     public void handler(InventoryClickEvent e, String actionDataPath, FileConfiguration cfg) {
         for(String msg : cfg.getStringList(actionDataPath)) {
