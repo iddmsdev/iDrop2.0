@@ -10,7 +10,7 @@ import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.*;
 import pl.iddmsdev.idrop.drops.BlockDrop;
 import pl.iddmsdev.idrop.drops.MobDrop;
-import pl.iddmsdev.idrop.generators.GeneratorBlockRegister;
+import pl.iddmsdev.idrop.generators.GeneratorBlocks;
 import pl.iddmsdev.idrop.generators.GeneratorCommand;
 import pl.iddmsdev.idrop.generators.Generators;
 import pl.iddmsdev.idrop.generators.GeneratorsDB;
@@ -96,7 +96,7 @@ public final class iDrop extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockDrop(), this);
         Bukkit.getPluginManager().registerEvents(new MobDrop(), this);
 
-        Bukkit.getPluginManager().registerEvents(new GeneratorBlockRegister(), this);
+        Bukkit.getPluginManager().registerEvents(new GeneratorBlocks(), this);
     }
 
     private void setupConfigFiles() {

@@ -1,7 +1,9 @@
 # USED FOR CREATING GENERATORS
 # GENERATORS CONFIG
-recipes-display-type: 'recipes-gui' # GUI or 'chat', if you want GUI just type name of GUI from gen-gui.yml
-list-display-type: 'chat' # GUI or 'chat', if you want GUI just type name of GUI from gen-gui.yml
+recipes-display: 'recipes-gui' # GUI or chat, if you want GUI just type name of GUI from gen-gui.yml, if chat write a list of messages
+list-display: # GUI or chat, if you want GUI just type name of GUI from gen-gui.yml, if chat write a list of messages
+  - '&aGenerators:'
+  - ' &7- &bstone (Example created by iDrop)'
 
 # GENERATORS
 enabled: true
@@ -10,8 +12,8 @@ generators:
     base-block: 'end_stone' # A block under generated blocks, leave 'none' if you don't wanna any block under, and just generated blocks.
     item: 'gold_block' # Item of generator
     #todo: item options,
+    delay: 1.0 # in seconds
     generate:
-      # SUM OF CHANCES MUST BE EQUALS TO 100
       stone:
         chance: 90.0
         block: 'stone'

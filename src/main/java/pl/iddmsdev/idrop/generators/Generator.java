@@ -1,6 +1,7 @@
 package pl.iddmsdev.idrop.generators;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -11,9 +12,14 @@ import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.iDrop;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Generator {
+
+    public static Map<Location, Generator> tickingGenerators = new HashMap<>();
+
     private final String systemName;
 
     private final ItemStack item; // not sure with final

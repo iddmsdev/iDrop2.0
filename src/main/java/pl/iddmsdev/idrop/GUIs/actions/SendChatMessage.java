@@ -11,7 +11,7 @@ public class SendChatMessage implements GUIAction {
         for(String msg : cfg.getStringList(actionDataPath)) {
             e.getWhoClicked().sendMessage(colorize(msg));
         }
-        e.setCancelled(true);
+        e.getWhoClicked().closeInventory();
     }
     private String colorize(String msg) {
         return ChatColor.translateAlternateColorCodes('&', msg);
