@@ -182,48 +182,50 @@ public class iDropGuiInterpreter implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         Inventory inv = e.getClickedInventory();
-        if (inv.getHolder() == null) {
-            ItemStack item = e.getCurrentItem();
-            if (item != null) {
-                if (item.hasItemMeta()) {
-                    PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-                    NamespacedKey key = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
-                    if (pdc.has(key, PersistentDataType.STRING)) {
-                        String action = pdc.get(key, PersistentDataType.STRING);
-                        if (action.equalsIgnoreCase("none")) {
-                            e.setCancelled(true);
-                            return;
-                        }
-                        for (GUIAction guiAction : actions) {
-                            if (action.equalsIgnoreCase(guiAction.getLabel())) {
-                                if (registeredInventories.containsKey(e.getClickedInventory())) {
-                                    String GUIItemIndex = "";
-                                    int itemIndex = 0;
-                                    InventoryPath invPath = registeredInventories.get(inv);
-                                    String itemsPath = invPath.getFullPath();
-                                    String actionDataPath = "none";
-                                    for (String path : invPath.getConfig()
-                                            .getConfigurationSection(itemsPath).getKeys(false)) {
-                                        // check if contains object 'var' in yaml
-                                        if (itemIndex == e.getSlot()) {
-                                            GUIItemIndex = path;
-                                            if(invPath.getConfig().contains(itemsPath + "." + GUIItemIndex + "." + invPath.getVariable())) {
-                                                String var = invPath.getConfig().getString(
-                                                        itemsPath + "." + GUIItemIndex + "." + invPath.getVariable());
-                                                if (invPath.getConfig().contains(invPath.getVariables() + "." + var)) {
-                                                    actionDataPath = invPath.getVariables() + "." + var + "." + invPath.getActionData();
-                                                    break;
-                                                }
-                                            }
-                                            actionDataPath = itemsPath + "." + GUIItemIndex + "." + invPath.getActionData();
-                                            break;
-                                        }
-                                        itemIndex++;
-                                    }
-                                    FileConfiguration config = invPath.getConfig();
-                                    guiAction.handler(e, actionDataPath, config);
-                                }
+        if (inv != null) {
+            if (inv.getHolder() == null) {
+                ItemStack item = e.getCurrentItem();
+                if (item != null) {
+                    if (item.hasItemMeta()) {
+                        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+                        NamespacedKey key = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
+                        if (pdc.has(key, PersistentDataType.STRING)) {
+                            String action = pdc.get(key, PersistentDataType.STRING);
+                            if (action.equalsIgnoreCase("none")) {
+                                e.setCancelled(true);
                                 return;
+                            }
+                            for (GUIAction guiAction : actions) {
+                                if (action.equalsIgnoreCase(guiAction.getLabel())) {
+                                    if (registeredInventories.containsKey(e.getClickedInventory())) {
+                                        String GUIItemIndex;
+                                        int itemIndex = 0;
+                                        InventoryPath invPath = registeredInventories.get(inv);
+                                        String itemsPath = invPath.getFullPath();
+                                        String actionDataPath = "none";
+                                        for (String path : invPath.getConfig()
+                                                .getConfigurationSection(itemsPath).getKeys(false)) {
+                                            // check if contains object 'var' in yaml
+                                            if (itemIndex == e.getSlot()) {
+                                                GUIItemIndex = path;
+                                                if (invPath.getConfig().contains(itemsPath + "." + GUIItemIndex + "." + invPath.getVariable())) {
+                                                    String var = invPath.getConfig().getString(
+                                                            itemsPath + "." + GUIItemIndex + "." + invPath.getVariable());
+                                                    if (invPath.getConfig().contains(invPath.getVariables() + "." + var)) {
+                                                        actionDataPath = invPath.getVariables() + "." + var + "." + invPath.getActionData();
+                                                        break;
+                                                    }
+                                                }
+                                                actionDataPath = itemsPath + "." + GUIItemIndex + "." + invPath.getActionData();
+                                                break;
+                                            }
+                                            itemIndex++;
+                                        }
+                                        FileConfiguration config = invPath.getConfig();
+                                        guiAction.handler(e, actionDataPath, config);
+                                    }
+                                    return;
+                                }
                             }
                         }
                     }

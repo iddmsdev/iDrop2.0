@@ -1,1 +1,25 @@
 # USED FOR GENERATOR RECIPES
+recipes:
+  stone: # unique name
+    result: 'stone' # Name of a generator (from generators.yml)
+    # Put here crafting elements (in these early versions there's no way to put generators there, but I think I'll add it as soon as possible)
+    # Explanation:
+    # For example you have: 'S : stone' before the colon there's a character (something like index or key) of an ingredient.
+    # After, there's a material (item) of ingredient.
+    # REMEMBER! The letter case does not matter. This means that all character must be unique, regardless of its size.
+    ingredients:
+      - 'S : stone'
+      - 'W : oak_planks'
+      - 'R : redstone_block'
+    # In crafting section, you put the ingredients characters as materials. Just imagine it as a crafting table, and each character is a slot.
+    # If you do not want anything in specified slot just put there a dot.
+    # Example:
+    #  Let be 'S' to be stone
+    #  crafting:
+    #   - 'SSS' So, in first slot you have stone, second one also stone, and third also stone
+    #   - 'S.S' Next, in first slot of second row you have stone, in second nothing, and stone in third
+    #   - 'SSS' And finally in third row you have exactly what in first row
+    crafting:
+      - 'SSS'
+      - 'SRW'
+      - 'WWW'

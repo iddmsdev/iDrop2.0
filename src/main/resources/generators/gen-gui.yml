@@ -108,7 +108,24 @@ guis:
       4:
         var: 'background'
       5:
-        var: 'background'
+        item: 'gold_block'
+        name: '&bExample iDrop generator'
+        action: 'open-generator-recipe-gui' # IT WORKS ONLY IN THIS GUI
+        action-data:
+          gui: 'recipe' # GUI name where it will be displayed
+          recipe: 'stone' # Here's a name of RECIPE (not generator) from gen-recipes.yml, it'll display data of
+          # slotX is for slots of recipe (like in crafting section in gen-recipes.yml, but for each slot value must be different)
+          slot1: 'cs1' # The unique identifier of item in GUI, this unique identifier is 5, but it can be different, because of who is writing GUIs
+          # look at recipe gui and you'll understand
+          slot2: 'cs2'
+          slot3: 'cs3'
+          slot4: 'cs4'
+          slot5: 'cs5'
+          slot6: 'cs6'
+          slot7: 'cs7'
+          slot8: 'cs8'
+          slot9: 'cs9'
+          result-slot: 'result' # And finally slot of result, of course you can leave of these slots blank ("") if you don't want display any recipe items there
       6:
         var: 'background'
       7:
@@ -117,4 +134,67 @@ guis:
         var: 'background'
       9:
         var: 'background'
-
+  recipe:
+    title: '&e&lRecipe'
+    rows: 3
+    items:
+      1:
+        var: 'background'
+      2:
+        var: 'background'
+      cs1:
+        # It can be anything, because it'll change when action is done
+        var: 'background2'
+      cs2:
+        var: 'background2'
+      cs3:
+        var: 'background2'
+      6:
+        var: 'background'
+      7:
+        var: 'background'
+      8:
+        var: 'background'
+      9:
+        var: 'background'
+      # end of row 1
+      10:
+        var: 'background'
+      11:
+        var: 'background'
+      cs4:
+        # It can be anything, because it'll change when action is done
+        var: 'background2'
+      cs5:
+        var: 'background2'
+      cs6:
+        var: 'background2'
+      15:
+        var: 'background'
+      result:
+        var: 'background2'
+      17:
+        var: 'background'
+      18:
+        var: 'background'
+      # end of row 2
+      19:
+        var: 'background'
+      20:
+        var: 'background'
+      cs7:
+        # It can be anything, because it'll change when action is done
+        var: 'background2'
+      cs8:
+        var: 'background2'
+      cs9:
+        var: 'background2'
+      24:
+        var: 'background'
+      25:
+        var: 'background'
+      26:
+        var: 'background'
+      27:
+        var: 'background'
+      # end of row 3
