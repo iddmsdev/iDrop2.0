@@ -1,5 +1,6 @@
 package pl.iddmsdev.idrop.generators;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,11 +29,11 @@ public class GeneratorCommand extends iDropCommandExtension {
     @Override
     public boolean handler(CommandSender sender, String[] args) {
         if(args.length==0) {
-            openGUI((Player) sender);
+            openGUI((Player) sender, gens.getString("home-gui-name"));
         } else if(args.length == 1 && args[0].equalsIgnoreCase("admin")) {
-            // todo: admin help
-        } else if(args.length == 1) {
-            // todo: user help of specified command
+            adminHelp(sender);
+        } else if(args.length == 1 && !args[0].equalsIgnoreCase("menu") && !args[0].equalsIgnoreCase("recipes") && !args[0].equalsIgnoreCase("list")) {
+            userHelp(sender);
         } else if(args[0].equalsIgnoreCase("admin")) {
             if(args[1].equalsIgnoreCase("get")) {
                 if(args.length == 3) {
@@ -64,25 +65,53 @@ public class GeneratorCommand extends iDropCommandExtension {
                     }
                 }
             } else {
-                // todo: admin help
+                adminHelp(sender);
             }
             return true;
         } else if(args[0].equalsIgnoreCase("menu")) {
-            openGUI((Player) sender);
+            openGUI((Player) sender, gens.getString("home-gui-name"));
         } else if(args[0].equalsIgnoreCase("recipes")) {
-            // todo: recipes
+            if(gens.isList("recipes-display")) {
+                for(String str : gens.getStringList("recipes-display")) {
+                    sender.sendMessage(colorize(str));
+                }
+            } else if(gens.isString("recipes-display")) {
+                openGUI((Player) sender, gens.getString("recipes-display"));
+            }
         } else if(args[0].equalsIgnoreCase("list")) {
-            // todo: list
+            if(gens.isList("list-display")) {
+                for(String str : gens.getStringList("list-display")) {
+                    sender.sendMessage(colorize(str));
+                }
+            } else if(gens.isString("recipes-display")) {
+                openGUI((Player) sender, gens.getString("list-display"));
+            }
         }
         return false;
     }
 
-    private void openGUI(Player p) {
+    private void openGUI(Player p, String gui) {
         iDropGuiInterpreter interpreter = new iDropGuiInterpreter(gengui, "guis", "variables");
-        p.openInventory(interpreter.compile("home-gui"));
+        p.openInventory(interpreter.compile(gui));
     }
 
-    private void userHelp() {
-        // todo
+    private void userHelp(CommandSender p) {
+        p.sendMessage("§aGenerators help");
+        p.sendMessage("§7/idrop generators §8- §aDisplays this message");
+        p.sendMessage("§7/idrop generators menu §8- §aDisplays main generators menu");
+        p.sendMessage("§7/idrop generators list §8- §aDisplays list of generators");
+        p.sendMessage("§7/idrop generators recipes §8- §aDisplays recipes menu");
     }
+
+    private void adminHelp(CommandSender p) {
+        p.sendMessage("§aGenerators §7- §cADMIN");
+        p.sendMessage("§7/idrop generators admin §8- §aDisplays this message");
+        p.sendMessage("§7/idrop generators admin get <all/generator-id> §8- §aDrops specified generator(s) at your location");
+    }
+
+
+    private String colorize(String msg) {
+        return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
 }

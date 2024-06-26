@@ -1,0 +1,2 @@
+# DATA FILES ARE RECOMMENDED ONLY FOR DEVELOPMENT USAGES, PLEASE DON'T MODIFY OR REMOVE THIS FILE!
+# megadrop-timers.yml is file where the player timers are saved on onDisable() and loaded at onEnable(). There is not always updated timers!

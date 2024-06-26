@@ -65,12 +65,22 @@ public class GeneratorBlocks implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
+        Material playerItem = e.getPlayer().getInventory().getItemInMainHand().getType();
+        Material requiredItem = null;
+        if(!gens.getString("destroying-item").equalsIgnoreCase("any")) {
+            requiredItem = Material.valueOf(gens.getString("destroying-item").toUpperCase());
+        }
         Location loc = e.getBlock().getLocation();
         ResultSet rs = queryRS("SELECT * FROM generators WHERE blockX = ? AND blockY = ? AND blockZ = ?", loc.getX(), loc.getY(), loc.getZ());
         try {
             if(rs != null && rs.next()) {
+                if(requiredItem!=null && requiredItem!=playerItem) { e.setCancelled(true); return; }
                 int id = rs.getInt("id");
+                String name = rs.getString("sysKey");
                 queryNRS("DELETE FROM generators WHERE id = ?", id);
+                e.setDropItems(false);
+                Generator gen = new Generator("idrop-g:" + name, gens, name);
+                e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), gen.getItem());
             } if(rs != null) {
                 rs = queryRS("SELECT * FROM generators WHERE blockX = ? AND blockY = ? AND blockZ = ?", loc.getX(), loc.getY()-1, loc.getZ());
                 if(rs != null && rs.next()) {

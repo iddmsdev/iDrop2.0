@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
 
 import java.util.ArrayList;
@@ -33,7 +35,6 @@ public class BlockDrop implements Listener {
                         List<Material> pickaxes = new ArrayList<>();
                         if(!config.getStringList("drops." + path + ".pickaxes.items").isEmpty()) {
                             for (String item : config.getStringList("drops." + path + ".pickaxes.items")) {
-                                System.out.println(Material.valueOf(item.toUpperCase()));
                                 Material mat = Material.valueOf(item.toUpperCase());
                                 pickaxes.add(mat);
                             }
@@ -97,12 +98,24 @@ public class BlockDrop implements Listener {
                                             else countMax = 64;
                                             amount = random.nextInt(countMax + 1 - countMin) * countMin + 1;
                                         }
+                                        // fortune
+                                        double chance = config.getDouble(fullpath + ".chance");
+                                        ItemStack handItem = e.getPlayer().getInventory().getItemInMainHand();
+                                        if(handItem.hasItemMeta()) {
+                                            int lvl = handItem.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_BLOCKS);
+                                            if(lvl>0) {
+                                                chance = Fortune.modifyChance(path, "blocks", lvl, chance);
+                                                amount = Fortune.modifyAmount(path, "blocks", lvl, amount);
+                                            }
+                                        }
+                                        if(MegaDrop.hasPlayerMegaDrop(e.getPlayer())) {
+                                            chance = MegaDrop.getModifiedChance(path, "blocks", chance);
+                                        }
+                                        double choice = 100 * random.nextDouble();
                                         // Finish setup
                                         ItemStack item = new ItemStack(itemMaterial, amount);
                                         // SETUP DROP
                                         // Chance
-                                        double chance = config.getDouble(fullpath + ".chance");
-                                        double choice = 0 + 100 * random.nextDouble();
                                         if (choice <= chance) {
                                             // Add drop
                                             if(!config.getBoolean(fullpath + ".drop-default-block")) {

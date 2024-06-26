@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
 
 import java.util.ArrayList;
@@ -28,10 +30,24 @@ public class MobDrop implements Listener {
                 try {
                     for (String path : config.getConfigurationSection("drops").getKeys(false)) {
                         // draw
+                        double chance = config.getDouble("drops." + path + ".chance");
+                        ItemStack mainHand = e.getEntity().getKiller().getInventory().getItemInMainHand();
+                        int amount = 1;
+                        if(mainHand.hasItemMeta()) {
+                            if(mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)>0) {
+                                amount = Fortune.modifyAmount(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS), 0);
+                                chance = Fortune.modifyChance(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS), chance);
+                            }
+                        }
                         Random rnd = new Random();
+                        System.out.println("ch-w-f: " + chance);
+                        if(MegaDrop.hasPlayerMegaDrop(e.getEntity().getKiller())) {
+                            chance = MegaDrop.getModifiedChance(path, "mobs", chance);
+                        }
+                        System.out.println("ch-w-md: " + chance);
                         double choice = 100 * rnd.nextDouble();
                         String drop = "drops." + path + ".";
-                        if (choice <= config.getDouble(drop + "chance")) {
+                        if (choice <= chance) {
                             // checking if used valid tool
                             boolean isValidTool = true;
                             if (config.getBoolean(drop + "tools.enabled")) {
@@ -60,23 +76,22 @@ public class MobDrop implements Listener {
                                     // creating item
                                     Material type = Material.valueOf(config.getString(drop + "item").toUpperCase());
                                     // amount
-                                    int amount = 1;
                                     if (config.getInt(drop + "count-min") == config.getInt(drop + "count-max")) {
-                                        amount = config.getInt(drop + "count-min");
+                                        amount += config.getInt(drop + "count-min");
                                     } else if (config.getInt(drop + "count-min") > 0) {
                                         int countMin = config.getInt(drop + "count-min");
                                         int countMax;
                                         if (config.getInt(drop + "count-max") > 0)
                                             countMax = config.getInt(drop + "count-max");
                                         else countMax = 64;
-                                        amount = rnd.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                        amount += rnd.nextInt(countMax + 1 - countMin) * countMin + 1;
                                     } else {
                                         int countMin = 1;
                                         int countMax;
                                         if (config.getInt(drop + "count-max") > 0)
                                             countMax = config.getInt(drop + "count-max");
                                         else countMax = 64;
-                                        amount = rnd.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                        amount += rnd.nextInt(countMax + 1 - countMin) * countMin + 1;
                                     }
                                     // combine
                                     ItemStack item = new ItemStack(type, amount);

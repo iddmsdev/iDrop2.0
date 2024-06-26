@@ -1,15 +1,6 @@
-# all of this is explained in gui.yml
+# all of this is explained in drops-gui.yml
 # USED FOR GENERATORS GUI
 
-# if you want you can use variable items (if you e.g. using same items multiple times). if you want to use this in your gui just write
-# name of your item, and next var: 'your_variable_name', for example:
-# example-gui:
-#   title: 'title'
-#   rows: x
-#   items:
-#     variable-item:
-#       var: 'example-variable'
-# REMEMBER
 variables:
   background:
     item: 'gray_stained_glass_pane'

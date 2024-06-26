@@ -1,0 +1,22 @@
+# This is a GUI config to display drops in menu.
+# Here you can find guide for creating GUIs in iDrop environment
+
+# THIS WON'T BE READ BY iDrop GUI INTERPRETER, that means this is only drops-gui.yml feature. Other features like this will be marked with a '*' sign.
+block-drops: 'b-drops' # Here type gui that will open after /idrop gui command.
+mob-drops: 'm-drops'
+
+# if you want you can use variable items (if you e.g. using same items multiple times). if you want to use this in your gui just write
+# name of your item, and next var: 'your_variable_name', for example:
+# example-gui:
+#   title: 'title'
+#   rows: x
+#   items:
+#     variable-item:
+#       var: 'example-variable'
+variables:
+
+
+guis:
+  b-drops: # unique id of gui, it may be used at other fields in config (like these with asterisk)
+    title: '&b&lBlock drops' # title of gui
+    rows: 4

@@ -1,9 +1,12 @@
 # USED FOR CREATING GENERATORS
 # GENERATORS CONFIG
-recipes-display: 'recipes-gui' # GUI or chat, if you want GUI just type name of GUI from gen-gui.yml, if chat write a list of messages
+recipes-display: 'recipes' # GUI or chat, if you want GUI just type name of GUI from gen-gui.yml, if chat write a list of messages
 list-display: # GUI or chat, if you want GUI just type name of GUI from gen-gui.yml, if chat write a list of messages
   - '&aGenerators:'
   - ' &7- &bstone (Example created by iDrop)'
+home-gui-name: 'home-gui' # GUI opened after use of /idrop generators menu
+
+destroying-item: 'golden_pickaxe' # Item with which you can destroy a generator. Type 'any' if with any item you want to destroy the generator.
 
 # GENERATORS
 enabled: true
@@ -11,12 +14,18 @@ generators:
   stone:
     base-block: 'end_stone' # A block under generated blocks, leave 'none' if you don't wanna any block under, and just generated blocks.
     item: 'gold_block' # Item of generator
-    #todo: item options,
-    delay: 1.0 # in seconds
+    name: '&eiDrop example generator' # Name of generator item
+    lore:
+      - '&aAn example generator.' # Description of generator item (in list)
+      - '&aChances: '
+      - ' &7Stone &a- 90%'
+      - ' &bDiamond &a- 10%'
+    glowing: true # is item glowing?
+    delay: 1.0 # in seconds, time to regenerate block
     generate:
-      stone:
-        chance: 90.0
-        block: 'stone'
+      stone: # unique id of generators
+        chance: 90.0 # chance to generate block
+        block: 'stone' # name of block
       diamond:
         chance: 10.0
         block: 'diamond_ore'

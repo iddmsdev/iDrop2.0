@@ -205,7 +205,6 @@ public class iDropGuiInterpreter implements Listener {
                                         String actionDataPath = "none";
                                         for (String path : invPath.getConfig()
                                                 .getConfigurationSection(itemsPath).getKeys(false)) {
-                                            // check if contains object 'var' in yaml
                                             if (itemIndex == e.getSlot()) {
                                                 GUIItemIndex = path;
                                                 if (invPath.getConfig().contains(itemsPath + "." + GUIItemIndex + "." + invPath.getVariable())) {

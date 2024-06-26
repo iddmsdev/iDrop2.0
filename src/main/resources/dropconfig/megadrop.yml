@@ -1,0 +1,5 @@
+enabled: true
+blocks:
+  example: 15.0 # Additional chance
+mobs:
+  example: 10.0

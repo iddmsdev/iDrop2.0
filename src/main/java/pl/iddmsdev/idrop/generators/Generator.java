@@ -1,19 +1,16 @@
 package pl.iddmsdev.idrop.generators;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.iDrop;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class Generator {
@@ -46,13 +43,26 @@ public class Generator {
             NamespacedKey g = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gen");
             e.getPersistentDataContainer().set(f, PersistentDataType.STRING, "generator");
             e.getPersistentDataContainer().set(g, PersistentDataType.STRING, b);
-            e.setLore(Arrays.asList("test1 : " + b));
+            List<String> lore = new ArrayList<>();
+            for (String str : a.getStringList(path + "lore")) {
+               lore.add(colorize(str));
+            }
+            e.setLore(lore);
+            e.setDisplayName(colorize(a.getString(path + "name")));
+            e.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             d.setItemMeta(e);
+            if(a.getBoolean(path + "glowing")) {
+                d.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+//                e.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             return d;
         } catch(Exception ex) {
             Bukkit.getLogger().severe("[iDrop] Cannot create item of generator " + b + ". Check if 'item' value is real minecraft item");
             return null;
         }
+    }
+    private String colorize(String msg) {
+        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
 }
