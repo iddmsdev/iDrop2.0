@@ -1,0 +1,34 @@
+//package pl.iddmsdev.idrop.commands;
+//
+//import org.bukkit.command.CommandSender;
+//import org.bukkit.configuration.file.FileConfiguration;
+//import org.bukkit.entity.Player;
+//import org.bukkit.inventory.Inventory;
+//import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
+//import pl.iddmsdev.idrop.drops.gui.DropGUI;
+//import pl.iddmsdev.idrop.iDrop;
+//
+//import java.util.ArrayList;
+//
+//public class TestCommand extends iDropCommandExtension {
+//
+//
+//    FileConfiguration cfg = iDrop.genGuiYML;
+//
+//    public TestCommand(String systemName, String label, String permission) {
+//        super(systemName, label, permission, new ArrayList<>());
+//    }
+//
+//    @Override
+//    public String getUsage() {
+//        return "§cUsage: §7/idrop test";
+//    }
+//
+//    @Override
+//    public boolean handler(CommandSender sender, String[] args) {
+//        return false;
+//    }
+//
+//
+//
+//}

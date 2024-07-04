@@ -1,0 +1,86 @@
+# COMMAND LABELS, ALIASES
+
+# Label is the main form of the command
+# Alias is alternative form of the command
+
+# You can't reload this section! You must reload your server or restart it.
+
+# COMMANDS
+idrop: # System name of command (that doesn't change anything, but do not modify it!), it's always default label of the command.
+  label: 'idrop' # Label of command
+  aliases: # And it's aliases
+    - 'drop'
+    - 'd'
+# EXTENSIONS (for example /idrop gui, in this case 'gui' is an extension. It's just extension of /idrop command)
+generators:
+#  enabled: true
+  label: 'generators'
+  aliases:
+    - 'gens'
+    - 'gen'
+megadrop:
+#  enabled: true
+  label: 'megadrop'
+  aliases:
+    - 'md'
+    - 'turbodrop'
+    - 'td'
+gui:
+  label: 'gui'
+  aliases:
+help:
+  label: 'help'
+  aliases:
+# ARGUMENT EXTENSIONS (for example /idrop generators recipes, in this case 'recipes' is an argument.)
+
+# Generators
+
+generators-recipes: # extension-argument
+  label: 'recipes'
+  aliases:
+    - 'rec'
+    - 'recipe'
+generators-menu:
+  label: 'menu'
+  aliases:
+generators-list:
+  label: 'list'
+  aliases:
+generators-admin:
+  label: 'admin'
+  aliases:
+generators-admin-get:
+  label: 'get'
+  aliases:
+    - 'g'
+generators-admin-get-all:
+  label: 'all'
+  aliases:
+
+# Megadrop
+
+megadrop-give:
+  label: 'give'
+  aliases:
+    - 'g'
+megadrop-check:
+  label: 'check'
+  aliases:
+    - 'c'
+
+# Default actions.
+# for example: if you type /idrop generators you can display: Usage, main gui or help. Help messages are in messages.yml
+defaults:
+  idrop: 'help' # Possible: Help, GUI (drops gui), usage.
+  generators: 'gui' # Possible: Help, GUI (generators gui), usage.
+
+# Usages
+usages:
+  idrop: '&cUsage: &7/idrop'
+  generators: '&cUsage: &7/idrop generators [menu/recipes/list]'
+  megadrop: '&cUsage: &7/idrop megadrop [give/check] <player> [time]'
+  gui: '&cUsage: &7/idrop gui'
+
+
+
+

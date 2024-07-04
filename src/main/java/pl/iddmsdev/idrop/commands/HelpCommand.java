@@ -1,11 +1,20 @@
 package pl.iddmsdev.idrop.commands;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import pl.iddmsdev.idrop.iDrop;
 
 public class HelpCommand extends iDropCommandExtension {
 
-    public HelpCommand(String systemName, String label) {
-        super(systemName, label);
+    private static final FileConfiguration cfg = iDrop.commandsYML;
+
+    public HelpCommand(String systemName, String label, String permission) {
+        super(systemName, label, permission, cfg.getStringList("help.aliases"));
+    }
+
+    @Override
+    public String getUsage() {
+        return "§cUsage: §7/idrop help";
     }
 
     @Override

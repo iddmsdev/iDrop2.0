@@ -17,20 +17,25 @@ public class MegaDrop {
     private static boolean running = false;
 
     public static double getModifiedChance(String drop, String dropType, double current) {
-        return current + cfg.getDouble(dropType + "." + drop);
-//        return current;
+        return (cfg.getBoolean("enabled")) ? current + cfg.getDouble(dropType + "." + drop) : current;
     }
 
     public static boolean hasPlayerMegaDrop(Player player) {
-        return megadropTimer.get(player.getUniqueId().toString())>0;
+        if(cfg.getBoolean("enabled")) {
+            if (megadropTimer.get(player.getUniqueId().toString()) == null) return false;
+            return megadropTimer.get(player.getUniqueId().toString()) > 0;
+        } else {
+            return false;
+        }
     }
 
     public static int getPlayerTimer(Player player) {
-        return megadropTimer.get(player.getUniqueId().toString());
+        return (cfg.getBoolean("enabled")) ? megadropTimer.get(player.getUniqueId().toString()) : 0;
     }
 
     public static void setPlayerTimer(Player player, int time) {
-        megadropTimer.put(player.getUniqueId().toString(), time);
+        if(cfg.getBoolean("enabled")) megadropTimer.put(player.getUniqueId().toString(), time);
+        else megadropTimer.put(player.getUniqueId().toString(), 0);
     }
 
     public static void addPlayer(Player player) {
@@ -42,18 +47,20 @@ public class MegaDrop {
     }
 
     public static void start(iDrop plugin) {
-        if(!running) {
-            running = true;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (Map.Entry<String, Integer> entry : megadropTimer.entrySet()) {
-                        if (entry.getValue() > 0) {
-                            megadropTimer.put(entry.getKey(), entry.getValue() - 1);
+        if(cfg.getBoolean("enabled")) {
+            if (!running) {
+                running = true;
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Map.Entry<String, Integer> entry : megadropTimer.entrySet()) {
+                            if (entry.getValue() > 0) {
+                                megadropTimer.put(entry.getKey(), entry.getValue() - 1);
+                            }
                         }
                     }
-                }
-            }.runTaskTimer(plugin, 0L, 20L);
+                }.runTaskTimer(plugin, 0L, 20L);
+            }
         }
     }
 

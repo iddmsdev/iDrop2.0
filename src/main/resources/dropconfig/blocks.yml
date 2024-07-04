@@ -1,5 +1,5 @@
 # CONFIGURATION OF DROPS FROM BLOCKS
-enabled: true
+enabled: true # Config reloads doesn't work fully with enabling and disabling features. To fully apply changes restart or reload server.
 drops:
   example: # UNIQUE NAME
     # LIST OR SINGLE STRING
@@ -16,7 +16,7 @@ drops:
     experience-max: 20 # OPTIONAL (DEFAULT 100)
     drop-default-block: true # DROP BLOCK THAT WAS MINED? REQUIRED
     pickaxes: # ITEMS WITH YOU CAN DROP THIS ITEM E.G.: DIAMOND PICkAXE, STICK, DIAMOND AXE. IT CAN BE ANY ITEM.
-      enabled: true # IT'S ENABLED?
+      enabled: true # IS IT ENABLED?
       # LIST OR SINGLE STRING
       items:
         - 'iron_pickaxe'

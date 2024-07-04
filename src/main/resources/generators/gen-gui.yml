@@ -101,7 +101,7 @@ guis:
       5:
         item: 'gold_block'
         name: '&bExample iDrop generator'
-        action: 'open-generator-recipe-gui' # IT WORKS ONLY IN THIS GUI
+        action: 'open-generator-recipe-gui' # IT WORKS ONLY IN THIS FILE
         action-data:
           gui: 'recipe' # GUI name where it will be displayed
           recipe: 'stone' # Here's a name of RECIPE (not generator) from gen-recipes.yml, it'll display data of

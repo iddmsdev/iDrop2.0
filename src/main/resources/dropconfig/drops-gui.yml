@@ -1,10 +1,18 @@
-# This is a GUI config to display drops in menu.
+#This is a GUI config to display drops in menu.
 # Here you can find guide for creating GUIs in iDrop environment
+enabled: true
 
 # THIS WON'T BE READ BY iDrop GUI INTERPRETER, that means this is only drops-gui.yml feature. Other features like this will be marked with a '*' sign.
-block-drops: 'b-drops' # Here type gui that will open after /idrop gui command.
-mob-drops: 'm-drops'
+drops: 'drops' # Here type gui that will open after /idrop gui or /idrop gui blocks command. (however you can just configure this in commands.yml)
 
+drop-item-name: '&b&l%name%' # A display name of drop item. Use %name% as drop name (e.g. 'Your drop is: %name%' -> 'Your drop is: stone') or you type 'none' to set default name (for example: on diamond item (in english locale) you will se 'Diamond')
+drop-item-lore: # A description of drop item.
+  - '&aChance to drop: &e%chance%' # Use %chance% as chance to drop. Example: Chance: %chance -> Chance: 10%
+  - '&aDrops from: &e%from%' # Use %from% to specify from what block/mobs item will drop. Example: From: %from% -> From: Stone, Cobblestone
+  - '&aAmount: &e%count%' # Use %count% to specify amount of item that can be dropped. Example: Amount: %count% -> Amount: 3 OR Amount: %count% -> Amount: 1-6 (You can configure it in messages.yml)
+  - '&aCan be obtained with: &e%obtained%' # Use %obtained% as required tool. Example: You can get it only with: %obtained% -> You can get it only with: Diamond pickaxe, Iron pickaxe, Netherite pickaxe
+
+# Everything below (with some excepts) will be read by GUI interpreter
 # if you want you can use variable items (if you e.g. using same items multiple times). if you want to use this in your gui just write
 # name of your item, and next var: 'your_variable_name', for example:
 # example-gui:
@@ -14,9 +22,153 @@ mob-drops: 'm-drops'
 #     variable-item:
 #       var: 'example-variable'
 variables:
+  background: # unique id of variable - this will be used in guis -> gui -> items
+    item: 'gray_stained_glass_pane' # What item? (REQUIRED)
+    name: '' # Displayed name of item (OPTIONAL)
+    # lore: (this is commented, because of this field won't be used.) - Description of item (OPTIONAL)
+    #   - '&aTest1' (Line 1)
+    #   - '&bTest2' (Line 2)
+    glowing: false # Is item glowing (like with enchants)? (OPTIONAL, DEFAULT: FALSE)
+    action: 'none' # Actions explaining what to do after item was clicked. (OPTIONAL, DEFAULT: 'none')
+    # There are currently 3 global actions (and 1 local, explained in gen-gui.yml)
+    # - 'none': After clicking the item, it'll change nothing.
+    # - 'open-internal-gui': After clicking the item, it'll open another gui (only target is specified in same file), specialized in action-data (look below)
+    # - 'send-chat-message': After clicking the item, it'll close menu and send specified chat message to player.
+    # action-data: (this is also commented, because of usage) - Additional information to action ('none' does not require any data) (REQUIRED, if action needs this)
+    # if action is 'open-internal-gui', the action data will look like this:
+    # - 'target' <- The line 1 is where you specify your target GUI, just type here unique id.
+    # - 'guis' <- The second line is where you specify the guis path (in all iDrop's files it'll be just guis, but this is prepared for other updates). iDrop requires this to interpreter.
+    # - 'variables' <- The last, third line is also where you type data to interpreter, but this time it isn't guis path, but variables. (in iDrop's files it'll be just variables).
+    # if action is 'send-chat-message', the action data will look like this:
+    #   - 'line1'
+    #   - 'line2' and as much as you want, these lines are simply messages.
 
+    # All of this information can be used in guis -> gui -> items
 
+# You can modify that freely. (but ofc remember about rules of yml files)
 guis:
-  b-drops: # unique id of gui, it may be used at other fields in config (like these with asterisk)
+  drops: # unique id of gui, it may be used at other fields in config (like these with asterisk)
     title: '&b&lBlock drops' # title of gui
-    rows: 4
+    rows: 6 # amount of GUI rows (from 1 to 6)
+    items: # List of items in GUI
+      # Amount of items must be the same as value of rows multiplied by nine (IMPORTANT)
+      1: # id of item, it can be anything, but must be unique
+        var: 'background' # This is your variable that you can use in your gui. Just simply type id of variable.
+      2:
+        var: 'background'
+      3:
+        item: 'diamond_pickaxe'
+        name: '&7&lBlock drops'
+      4:
+        var: 'background'
+      5:
+        var: 'background'
+      6:
+        var: 'background'
+      7:
+        item: 'diamond_sword'
+        name: '&a&lMob drops'
+      8:
+        var: 'background'
+      9:
+        var: 'background'
+      # end of row 1
+      10:
+        var: 'background'
+      11:
+        var: 'background'
+      12:
+        var: 'background'
+      13:
+        var: 'background'
+      14:
+        var: 'background'
+      15:
+        var: 'background'
+      16:
+        var: 'background'
+      17:
+        var: 'background'
+      18:
+        var: 'background'
+      # end of row 2
+      19:
+        var: 'background'
+      20:
+        item: 'air' # This probably will be modified if drop will be specified! Else it will be air.
+        # IF DROP IS SPECIFIED, ACTION WILL BE NONE, YOU CAN'T MODIFY IT.
+        drop: 'example' # Name of drop (*) (remember that sign '*' doesn't mean optional field)
+        drop-type: 'blocks' # This is required if drop field is specified. It stands for drop type (blocks or mobs). (*)
+      21:
+        item: 'air' # There are no more block drops, so I'll leave this slot empty, like others. But of course you can add your drop.
+      22:
+        item: 'air'
+      23:
+        var: 'background'
+      24:
+        item: 'air'
+        drop: 'example' # *
+        drop-type: 'mobs' # *
+      25:
+        item: 'air'
+      26:
+        item: 'air'
+      27:
+        var: 'background'
+      # end of row 3
+      28:
+        var: 'background'
+      29:
+        item: 'air'
+      30:
+        item: 'air'
+      31:
+        item: 'air'
+      32:
+        var: 'background'
+      33:
+        item: 'air'
+      34:
+        item: 'air'
+      35:
+        item: 'air'
+      36:
+        var: 'background'
+      # end of row 4
+      37:
+        var: 'background'
+      38:
+        item: 'air'
+      39:
+        item: 'air'
+      40:
+        item: 'air'
+      41:
+        var: 'background'
+      42:
+        item: 'air'
+      43:
+        item: 'air'
+      44:
+        item: 'air'
+      45:
+        var: 'background'
+      # end of row 5
+      46:
+        var: 'background'
+      47:
+        var: 'background'
+      48:
+        var: 'background'
+      49:
+        var: 'background'
+      50:
+        var: 'background'
+      51:
+        var: 'background'
+      52:
+        var: 'background'
+      53:
+        var: 'background'
+      54:
+        var: 'background'

@@ -1,8 +1,8 @@
 package pl.iddmsdev.idrop;
 
-import jdk.vm.ci.meta.Value;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -17,6 +17,7 @@ import pl.iddmsdev.idrop.GUIs.actions.SendChatMessage;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.*;
 import pl.iddmsdev.idrop.drops.BlockDrop;
+import pl.iddmsdev.idrop.drops.gui.DropGUICommand;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.drops.MobDrop;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDropCommand;
@@ -28,6 +29,7 @@ import pl.iddmsdev.idrop.generators.recipes.Recipe;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,8 @@ public final class iDrop extends JavaPlugin implements Listener {
     public static File genRecipes;
     public static File fortune;
     public static File megadrop;
+    public static File dropGUI;
+    public static File commands;
     private File megadropTimers;
 
 
@@ -58,6 +62,8 @@ public final class iDrop extends JavaPlugin implements Listener {
     public static FileConfiguration genRecipesYML;
     public static FileConfiguration fortuneYML;
     public static FileConfiguration megadropYML;
+    public static FileConfiguration dropGuiYML;
+    public static FileConfiguration commandsYML;
     private FileConfiguration megadropTimersYML;
 
     public static boolean blockDroppingDirectlyToInv;
@@ -70,7 +76,7 @@ public final class iDrop extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        System.out.println("iDrop has just loaded ABV: 9");
+        System.out.println("iDrop has just loaded ABV: 10");
         System.out.println("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles();
@@ -88,57 +94,71 @@ public final class iDrop extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        for(Map.Entry<String, Integer> entry : MegaDrop.getEntrySet()) {
-            if(entry.getValue()>0) {
-                megadropTimersYML.set(entry.getKey(), entry.getValue());
+        if(megadropYML.getBoolean("enabled")) {
+            for (Map.Entry<String, Integer> entry : MegaDrop.getEntrySet()) {
+                if (entry.getValue() > 0) {
+                    megadropTimersYML.set(entry.getKey(), entry.getValue());
+                }
             }
+            try {
+                megadropTimersYML.save(megadropTimers);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Bukkit.getLogger().log(Level.INFO, "Megadrop timers saved.");
         }
-        try {
-            megadropTimersYML.save(megadropTimers);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Bukkit.getLogger().log(Level.INFO, "Megadrop timers saved.");
+        GeneratorsDB.disconnect();
         System.out.println("iDrop disabled. Bye!");
     }
 
     private void setupDBs() {
-        GeneratorsDB.connect();
+        if(generatorsYML.getBoolean("enabled")) {
+            GeneratorsDB.connect();
+        }
     }
 
     private void setupMegadrop() {
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            if(megadropTimersYML.contains(p.getUniqueId().toString())) {
-                try {
-                    MegaDrop.setPlayerTimer(p, (int) megadropTimersYML.get(p.getUniqueId().toString()));
-                    continue;
-                } catch(Exception ex) {
-                    Bukkit.getLogger().log(Level.SEVERE, "Cannot get player timer for some reasons. (iDrop, ln:106-107) \n" +
-                            "Details: \n" +
-                            "Player: " + p.getName() + ", UUID: " + p.getUniqueId() + "\n" +
-                            "Contains: " + megadropTimersYML.contains(p.getUniqueId().toString()) + "\n" +
-                            "Please report it to developer if this error is often.");
+        if(megadropYML.getBoolean("enabled")) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (megadropTimersYML.contains(p.getUniqueId().toString())) {
+                    try {
+                        //noinspection DataFlowIssue
+                        MegaDrop.setPlayerTimer(p, (int) megadropTimersYML.get(p.getUniqueId().toString()));
+                        continue;
+                    } catch (Exception ex) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Cannot get player timer for some reasons. (iDrop, ln:106-107) \n" +
+                                "Details: \n" +
+                                "Player: " + p.getName() + ", UUID: " + p.getUniqueId() + "\n" +
+                                "Contains: " + megadropTimersYML.contains(p.getUniqueId().toString()) + "\n" +
+                                "Please report it to developer if this error is often.");
+                    }
                 }
+                MegaDrop.addPlayer(p);
             }
-            MegaDrop.addPlayer(p);
+            MegaDrop.start(this);
         }
-        MegaDrop.start(this);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        if(!MegaDrop.hasPlayerMegaDrop(e.getPlayer())) MegaDrop.addPlayer(e.getPlayer());
+        if(megadropYML.getBoolean("enabled")) {
+            if (!MegaDrop.hasPlayerMegaDrop(e.getPlayer())) {
+                MegaDrop.addPlayer(e.getPlayer());
+            }
+        }
     }
 
     private void setupRecipes() {
-        for(String key : genRecipesYML.getConfigurationSection("recipes").getKeys(false)) {
-            String id = genRecipesYML.getString("recipes."+key+".result");
-            ItemStack is = new Generator("idrop-g:"+id, generatorsYML, id).getItem();
-            NamespacedKey namespacedKey = new NamespacedKey(this, "idrop-gen-recipe." + key);
-            Recipe rec = new Recipe(namespacedKey, is, key);
-            rec.assignToPlugin();
-            generatorRecipes.add(rec);
-            getLogger().log(Level.INFO, "Registered new generator crafting: " + key);
+        if(generatorsYML.getBoolean("enabled")) {
+            for (String key : genRecipesYML.getConfigurationSection("recipes").getKeys(false)) {
+                String id = genRecipesYML.getString("recipes." + key + ".result");
+                ItemStack is = new Generator("idrop-g:" + id, generatorsYML, id).getItem();
+                NamespacedKey namespacedKey = new NamespacedKey(this, "idrop-gen-recipe." + key);
+                Recipe rec = new Recipe(namespacedKey, is, key);
+                rec.assignToPlugin();
+                generatorRecipes.add(rec);
+                getLogger().log(Level.INFO, "Registered new generator crafting: " + key);
+            }
         }
     }
 
@@ -149,29 +169,40 @@ public final class iDrop extends JavaPlugin implements Listener {
     }
 
     private void setupCommands() {
-        getCommand("idrop").setExecutor(new iDropCommand());
+        try {
+            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            bukkitCommandMap.setAccessible(true);
+            CommandMap commandMap = (CommandMap) bukkitCommandMap.get(getServer());
+            commandMap.register(this.getName(), new iDropCommand(commandsYML.getString("idrop.label")));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Report it to developer!");
+        }
         getCommand("idrop-dis").setExecutor(new Disable());
 
         // IDROP EXTENSIONS
 
+        FileConfiguration cfg = commandsYML;
+
         // if valid value in config is set:
-        iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", "help");
+        iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", cfg.getString("help.label"), "all");
         iDropCommand.setHelpCommand(helpCmd);
         iDropCommand.registerExtension(helpCmd);
         // end of if
 
-        iDropCommand.registerExtension(new TestCommand("idrop:testcmd", "test"));
-        iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", "generators"));
-        iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", "megadrop"));
+        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", "generators", "idrop.generators.user"));
+        iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getString("megadrop.label"), "idrop.megadrop.user"));
+        iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getString("gui.label"), "idrop.gui"));
     }
 
     private void setupListeners() {
+        Bukkit.getPluginManager().registerEvents(this, this);
+
         Bukkit.getPluginManager().registerEvents(new iDropGuiInterpreter(null, null, null), this);
 
-        Bukkit.getPluginManager().registerEvents(new BlockDrop(), this);
-        Bukkit.getPluginManager().registerEvents(new MobDrop(), this);
+        if(blocksYML.getBoolean("enabled")) Bukkit.getPluginManager().registerEvents(new BlockDrop(), this);
+        if(mobsYML.getBoolean("enabled")) Bukkit.getPluginManager().registerEvents(new MobDrop(), this);
 
-        Bukkit.getPluginManager().registerEvents(new GeneratorBlocks(), this);
+        if(generatorsYML.getBoolean("enabled")) Bukkit.getPluginManager().registerEvents(new GeneratorBlocks(), this);
     }
 
     private void setupConfigFiles() {
@@ -206,6 +237,10 @@ public final class iDrop extends JavaPlugin implements Listener {
         if(!megadrop.exists()) saveResource("dropconfig/megadrop.yml", false);
         megadropTimers = new File(dataFolder, "data/megadrop-timers.yml");
         if(!megadropTimers.exists()) saveResource("data/megadrop-timers.yml", false);
+        dropGUI = new File(dataFolder, "dropconfig/drops-gui.yml");
+        if(!dropGUI.exists()) saveResource("dropconfig/drops-gui.yml", false);
+        commands = new File(dataFolder, "commands.yml");
+        if(!commands.exists()) saveResource("commands.yml", false);
 
         blocksYML = YamlConfiguration.loadConfiguration(blocks);
         mobsYML = YamlConfiguration.loadConfiguration(mobs);
@@ -216,15 +251,19 @@ public final class iDrop extends JavaPlugin implements Listener {
         fortuneYML = YamlConfiguration.loadConfiguration(fortune);
         megadropYML = YamlConfiguration.loadConfiguration(megadrop);
         megadropTimersYML = YamlConfiguration.loadConfiguration(megadropTimers);
+        dropGuiYML = YamlConfiguration.loadConfiguration(dropGUI);
+        commandsYML = YamlConfiguration.loadConfiguration(commands);
     }
     public static Recipe getRecipeByID(String identifier) {
-        Recipe recipe = null;
-        for(Recipe rec : generatorRecipes) {
-            if(rec.getRecipeIdentifier().equals(identifier)) {
-                recipe = rec;
+        if(generatorsYML.getBoolean("enabled")) {
+            Recipe recipe = null;
+            for (Recipe rec : generatorRecipes) {
+                if (rec.getRecipeIdentifier().equals(identifier)) {
+                    recipe = rec;
+                }
             }
-        }
-        return recipe;
+            return recipe;
+        } return null;
     }
 
 }

@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.iDrop;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class iDropGuiInterpreter implements Listener {
@@ -94,7 +96,6 @@ public class iDropGuiInterpreter implements Listener {
             return returnable;
         } catch (Exception ex) {
             Bukkit.getLogger().severe("[iDrop] Here's GUI interpreter: Cannot compile GUI " + GUIName);
-            Bukkit.getLogger().severe("Error message: " + ex.getMessage());
         }
         return null;
     }
@@ -142,12 +143,18 @@ public class iDropGuiInterpreter implements Listener {
                     returnable.add(variables.get(var));
                 } else if (var != null && !variables.containsKey(var)) {
                     ItemStack item = new ItemStack(Material.STONE);
-                    ItemMeta im = item.getItemMeta();
-                    im.setDisplayName("Unrecognized variable: " + var);
-                    im.setLore(Collections.singletonList("§f§rIf 'var' key is redundant remove it, 'var' keys are priority!"));
-                    item.setItemMeta(im);
+                    if (item.hasItemMeta()) {
+                        ItemMeta im = item.getItemMeta();
+                        im.setDisplayName("Unrecognized variable: " + var);
+                        im.setLore(Collections.singletonList("§f§rIf 'var' key is redundant remove it, 'var' keys are priority!"));
+                        item.setItemMeta(im);
+                    }
                     returnable.add(item);
                 } else {
+                    if (a.getString(fpath + g).equalsIgnoreCase("air")) {
+                        returnable.add(new ItemStack(Material.AIR, 0));
+                        continue;
+                    }
                     Material mat = Material.valueOf(a.getString(fpath + g).toUpperCase());
                     int amount = a.getInt(fpath + l);
                     amount = (amount == 0) ? 1 : amount;
@@ -170,6 +177,7 @@ public class iDropGuiInterpreter implements Listener {
                 }
             } catch (Exception ex) {
                 Bukkit.getLogger().severe("[iDrop] Here's GUI interpreter: Cannot compile items (GUI: " + GUI + ") in " + fpath);
+                Bukkit.getLogger().log(Level.SEVERE, ex.getMessage());
             }
         }
         return returnable;
@@ -186,49 +194,47 @@ public class iDropGuiInterpreter implements Listener {
             if (inv.getHolder() == null) {
                 ItemStack item = e.getCurrentItem();
                 if (item != null) {
-                    if (item.hasItemMeta()) {
-                        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-                        NamespacedKey key = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
-                        if (pdc.has(key, PersistentDataType.STRING)) {
-                            String action = pdc.get(key, PersistentDataType.STRING);
-                            if (action.equalsIgnoreCase("none")) {
-                                e.setCancelled(true);
-                                return;
-                            }
-                            for (GUIAction guiAction : actions) {
-                                if (action.equalsIgnoreCase(guiAction.getLabel())) {
-                                    if (registeredInventories.containsKey(e.getClickedInventory())) {
-                                        String GUIItemIndex;
-                                        int itemIndex = 0;
-                                        InventoryPath invPath = registeredInventories.get(inv);
-                                        String itemsPath = invPath.getFullPath();
-                                        String actionDataPath = "none";
-                                        for (String path : invPath.getConfig()
-                                                .getConfigurationSection(itemsPath).getKeys(false)) {
-                                            if (itemIndex == e.getSlot()) {
-                                                GUIItemIndex = path;
-                                                if (invPath.getConfig().contains(itemsPath + "." + GUIItemIndex + "." + invPath.getVariable())) {
-                                                    String var = invPath.getConfig().getString(
-                                                            itemsPath + "." + GUIItemIndex + "." + invPath.getVariable());
-                                                    if (invPath.getConfig().contains(invPath.getVariables() + "." + var)) {
-                                                        actionDataPath = invPath.getVariables() + "." + var + "." + invPath.getActionData();
-                                                        break;
-                                                    }
+                    PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+                    NamespacedKey key = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
+                    if (pdc.has(key, PersistentDataType.STRING)) {
+                        String action = pdc.get(key, PersistentDataType.STRING);
+                        if (action.equalsIgnoreCase("none")) {
+                            e.setCancelled(true);
+                            return;
+                        }
+                        for (GUIAction guiAction : actions) {
+                            if (action.equalsIgnoreCase(guiAction.getLabel())) {
+                                if (registeredInventories.containsKey(e.getClickedInventory())) {
+                                    String GUIItemIndex;
+                                    int itemIndex = 0;
+                                    InventoryPath invPath = registeredInventories.get(inv);
+                                    String itemsPath = invPath.getFullPath();
+                                    String actionDataPath = "none";
+                                    for (String path : invPath.getConfig()
+                                            .getConfigurationSection(itemsPath).getKeys(false)) {
+                                        if (itemIndex == e.getSlot()) {
+                                            GUIItemIndex = path;
+                                            if (invPath.getConfig().contains(itemsPath + "." + GUIItemIndex + "." + invPath.getVariable())) {
+                                                String var = invPath.getConfig().getString(
+                                                        itemsPath + "." + GUIItemIndex + "." + invPath.getVariable());
+                                                if (invPath.getConfig().contains(invPath.getVariables() + "." + var)) {
+                                                    actionDataPath = invPath.getVariables() + "." + var + "." + invPath.getActionData();
+                                                    break;
                                                 }
-                                                actionDataPath = itemsPath + "." + GUIItemIndex + "." + invPath.getActionData();
-                                                break;
                                             }
-                                            itemIndex++;
+                                            actionDataPath = itemsPath + "." + GUIItemIndex + "." + invPath.getActionData();
+                                            break;
                                         }
-                                        FileConfiguration config = invPath.getConfig();
-                                        guiAction.handler(e, actionDataPath, config);
+                                        itemIndex++;
                                     }
-                                    return;
+                                    FileConfiguration config = invPath.getConfig();
+                                    guiAction.handler(e, actionDataPath, config);
                                 }
+                                return;
                             }
                         }
                     }
-                }
+                } else e.setCancelled(true);
             }
         }
     }

@@ -78,7 +78,7 @@ public class BlockDrop implements Listener {
                                     } else {
                                         // SETUP ITEM
                                         // Material
-                                        Material itemMaterial = Material.valueOf(config.getString(fullpath + ".item"));
+                                        Material itemMaterial = Material.valueOf(config.getString(fullpath + ".item").toUpperCase());
                                         // Amount
                                         int amount;
                                         if (config.getInt(fullpath + ".count-min") == config.getInt(fullpath + ".count-max")) {
@@ -119,8 +119,9 @@ public class BlockDrop implements Listener {
                                         if (choice <= chance) {
                                             // Add drop
                                             if(!config.getBoolean(fullpath + ".drop-default-block")) {
-                                                    e.setDropItems(false);
-                                            } else if(iDrop.blockDroppingDirectlyToInv) {
+                                                e.setDropItems(false);
+                                            }
+                                            if(iDrop.blockDroppingDirectlyToInv) {
                                                 e.setDropItems(false);
                                                 List<ItemStack> modifiedDrops = (List<ItemStack>) e.getBlock().getDrops();
                                                 modifiedDrops.add(item);
