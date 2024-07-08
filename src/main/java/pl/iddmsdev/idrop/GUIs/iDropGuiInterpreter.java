@@ -143,12 +143,10 @@ public class iDropGuiInterpreter implements Listener {
                     returnable.add(variables.get(var));
                 } else if (var != null && !variables.containsKey(var)) {
                     ItemStack item = new ItemStack(Material.STONE);
-                    if (item.hasItemMeta()) {
-                        ItemMeta im = item.getItemMeta();
-                        im.setDisplayName("Unrecognized variable: " + var);
-                        im.setLore(Collections.singletonList("§f§rIf 'var' key is redundant remove it, 'var' keys are priority!"));
-                        item.setItemMeta(im);
-                    }
+                    ItemMeta im = item.getItemMeta();
+                    im.setDisplayName("Unrecognized variable: " + var);
+                    im.setLore(Collections.singletonList("§f§rIf 'var' key is redundant remove it, 'var' keys are priority!"));
+                    item.setItemMeta(im);
                     returnable.add(item);
                 } else {
                     if (a.getString(fpath + g).equalsIgnoreCase("air")) {

@@ -22,6 +22,7 @@ public class DropGUI {
 
 
     private final FileConfiguration cfg = iDrop.dropGuiYML;
+    private final FileConfiguration msg = iDrop.messagesYML;
     private final Player player;
 
     public DropGUI(Player p) {
@@ -72,7 +73,7 @@ public class DropGUI {
                             obtained = processListToReadFriendly(Collections.singletonList(dropConfig.getString(dpath + lobtained + ".items")));
                         }
                     } else {
-                        obtained = "All tools";
+                        obtained = col(msg.getString("all-tools"));
                     }
                     int min = 1;
                     if (dropConfig.contains(dpath + "count-min")) min = dropConfig.getInt(dpath + "count-min");
@@ -82,7 +83,8 @@ public class DropGUI {
                     if(min-max==0) {
                         line = line.replaceAll("%count%", String.valueOf(min));
                     } else {
-                        line = line.replaceAll("%count%", min + "-" + max);
+                        line = line.replaceAll("%count%",
+                                col(msg.getString("from-x-to-y")).replaceAll("%x%", String.valueOf(min)).replaceAll("%y%", String.valueOf(max)));
                     }
                     lore.add(
                             col(line.
@@ -115,7 +117,7 @@ public class DropGUI {
                     }
                     return capitalized.trim();
                 })
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(col(msg.getString("friendly-list-separator"))));
     }
 
     private String col(String msg) {

@@ -9,6 +9,7 @@ import pl.iddmsdev.idrop.iDrop;
 
 public class DropGUICommand extends iDropCommandExtension {
     private static final FileConfiguration cfg = iDrop.commandsYML;
+    private static final FileConfiguration msg = iDrop.messagesYML;
     public DropGUICommand(String systemName, String label, String permission) {
         super(systemName, label, permission, cfg.getStringList("gui.aliases"));
     }
@@ -24,9 +25,10 @@ public class DropGUICommand extends iDropCommandExtension {
             Player p = (Player) sender;
             DropGUI dg = new DropGUI(p);
             dg.openGUI();
-            return true;
+        } else {
+            sender.sendMessage(colorize(msg.getString("must-be-a-player")));
         }
-        return false;
+        return true;
     }
 
     private String colorize(String msg) {

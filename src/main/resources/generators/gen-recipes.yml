@@ -1,4 +1,5 @@
 # USED FOR GENERATOR RECIPES
+# On this file reloads won't work. Instead of this use server reload or restart.
 recipes:
   stone: # unique name
     result: 'stone' # Name of a generator (from generators.yml)

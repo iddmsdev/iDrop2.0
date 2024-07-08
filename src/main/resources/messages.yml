@@ -1,0 +1,56 @@
+# Commands
+must-be-a-player: '&cYou must be a player!'
+no-permission: '&cNo permission!'
+
+main-help:
+  - '&8[===--_ &biDrop help &8_--===]'
+  - '&a/idrop [help] &7- Displays this message'
+  - '&a/idrop gui &7- Displays menu of drops'
+  - '&a/idrop generators &7- Generators command'
+  - '&a/idrop megadrop &7- Shows your megadrop time'
+generators-user-help:
+  - "&aGenerators help"
+  - "&7/idrop generators &8- &aDisplays this message"
+  - "&7/idrop generators menu &8- &aDisplays main generators menu"
+  - "&7/idrop generators list &8- &aDisplays list of generators"
+  - "&7/idrop generators recipes &8- &aDisplays recipes menu"
+generators-admin-help:
+  - "&aGenerators &7- &cADMIN"
+  - "&7/idrop generators admin &8- &aDisplays this message"
+  - "&7/idrop generators admin get <all/generator-id> &8- &aDrops specified generator(s) at your location"
+
+# Drops GUI
+
+from-x-to-y: '%x%-%y%' # Min - %x%, Max - %y%
+friendly-list-separator: ', ' # It can be spoken in %obtained% and %from% in drops-gui.yml. For example let explain it on %obtained%.
+# So, you have list of all pickaxes. In java displaying lists will look like this: [DIAMOND_PICKAXE, NETHERITE_PICKAXE, IRON_PICKA...]
+# Friendly display (made by iDrop) will look like this: Diamond Pickaxe, Netherite Pickaxe, Iron Picka...
+# So finally ', ' is this seperator.
+all-tools: 'All tools'
+
+# Megadrop
+
+seconds: 's'
+minutes: 'm'
+hours: 'h'
+days: 'd'
+time-separator: ' ' # Text between time units. For example: 10m 5s. In this case ' ' is separator.
+megadrop-check: '&d%player% &bhas remaining megadrop time: &d%time%.'
+megadrop-check-no-time: '&bThis player does not have megadrop.' # You can use %player% to get player name
+megadrop-self-check: '&bYour remaining megadrop time: &d%time%.'
+megadrop-self-check-no-time: '&bYou do not have megadrop.'
+this-player-received: '&bThis player has now &d%time% &bof megadrop.' # You can also use %player% or %received% to get added time.
+you-received: '&bYou received &d%received% &bof megadrop.' # You can use %time% as total time, or %received% as received time.
+
+greater-than-zero-error: '&cTime must be greater than zero!'
+number-parsing-error: "&cYou must type numbers (not too long) in field 'time'!"
+no-player-found-error: "&cPlayer &7%player% &cis not online!"
+
+# Generators
+
+dropped-generator: "&aDropped generator: '%name%'"
+generator-not-found: "&cThe '%name%' generator doesn't exist!"
+
+# Others
+
+reloaded: '&eConfigs reloaded! &e&lRemember to see the console for possible errors!'

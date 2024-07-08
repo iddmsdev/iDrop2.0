@@ -24,15 +24,6 @@ public class GeneratorsDB {
             ex.printStackTrace();
         }
     }
-
-    public static void disconnect() {
-        try {
-            liteCon.close();
-        } catch(SQLException ex) {
-            ex.printStackTrace();;
-        }
-    }
-
     public static void createTable() {
         PreparedStatement ps = null;
         try {
@@ -85,7 +76,6 @@ public class GeneratorsDB {
                 }
             }
             rs = ps.executeQuery();
-            ps.close();
             return rs;
         } catch(SQLException ex) {
             ex.printStackTrace();

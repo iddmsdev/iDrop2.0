@@ -25,7 +25,7 @@ public class OpenGeneratorRecipeGUI implements GUIAction {
         for(int i = 1; i<=9; i++) {
             slots[i-1] = cfg.getString(actionDataPath + ".slot" + i);
         }
-        String resultSlot = cfg.getString(actionDataPath + ".result-slot"); // todo
+        String resultSlot = cfg.getString(actionDataPath + ".result-slot");
         String recipeID = cfg.getString(actionDataPath + ".recipe");
         Recipe rec = iDrop.getRecipeByID(recipeID);
         Inventory inv = interpreter.compile(recipeGUI);

@@ -15,10 +15,7 @@ import pl.iddmsdev.idrop.iDrop;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static pl.iddmsdev.idrop.generators.GeneratorsDB.queryNRS;
 import static pl.iddmsdev.idrop.generators.GeneratorsDB.queryRS;
@@ -93,7 +90,7 @@ public class GeneratorBlocks implements Listener {
                         blocks.put(generated, Material.valueOf(gens.getString(fpath + "block").toUpperCase()));
                         chances.put(generated, gens.getDouble(fpath + "chance"));
                     }
-                     new BukkitRunnable() {
+                    new BukkitRunnable() {
                         @Override
                         public void run() {
                             ResultSet rs = queryRS("SELECT * FROM generators WHERE blockX = ? AND blockY = ? AND blockZ = ?", loc.getX(), loc.getY()-1, loc.getZ());
@@ -117,7 +114,8 @@ public class GeneratorBlocks implements Listener {
     }
 
     private void generate(Map<String, Double> chances, Map<String, Material> blocks, Location loc) {
-        if(loc.add(0, 1, 0).getBlock().getType().equals(Material.AIR)) {
+        List<Material> airs = Arrays.asList(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR);
+        if(airs.contains(loc.add(0, 1, 0).getBlock().getType())) {
             List<Material> mats = new ArrayList<>(blocks.values());
             List<Double> chance = new ArrayList<>(chances.values());
             Material mat = draw(mats, chance);

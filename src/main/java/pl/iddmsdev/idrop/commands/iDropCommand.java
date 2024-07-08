@@ -19,6 +19,7 @@ public class iDropCommand extends BukkitCommand {
 
     private static iDropCommandExtension helpCommand;
     private static final FileConfiguration cfg = iDrop.commandsYML;
+    private static final FileConfiguration msg = iDrop.messagesYML;
 
     private static final Set<iDropCommandExtension> extensions = new HashSet<>();
 
@@ -51,13 +52,13 @@ public class iDropCommand extends BukkitCommand {
                         return true;
                     }
                 } else {
-                    sender.sendMessage("§cNo permission!");
+                    sender.sendMessage(colorize(msg.getString("no-permission")));
                 }
             }
             String[] hArgs = {};
             return helpCommand.handler(sender, hArgs);
         } else {
-            sender.sendMessage("§cNo permission!");
+            sender.sendMessage(colorize(msg.getString("no-permission")));
         }
         return false;
     }
@@ -94,7 +95,7 @@ public class iDropCommand extends BukkitCommand {
                 dg.openGUI();
                 return true;
             } else {
-                sender.sendMessage("§cYou must be a player!");
+                sender.sendMessage(colorize(msg.getString("must-be-a-player")));
                 return true;
             }
         } else if (thisDefault.equalsIgnoreCase("usage")) {

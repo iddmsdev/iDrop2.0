@@ -13,13 +13,11 @@ idrop: # System name of command (that doesn't change anything, but do not modify
     - 'd'
 # EXTENSIONS (for example /idrop gui, in this case 'gui' is an extension. It's just extension of /idrop command)
 generators:
-#  enabled: true
   label: 'generators'
   aliases:
     - 'gens'
     - 'gen'
 megadrop:
-#  enabled: true
   label: 'megadrop'
   aliases:
     - 'md'
@@ -30,6 +28,9 @@ gui:
   aliases:
 help:
   label: 'help'
+  aliases:
+reload:
+  label: 'reload'
   aliases:
 # ARGUMENT EXTENSIONS (for example /idrop generators recipes, in this case 'recipes' is an argument.)
 

@@ -53,7 +53,6 @@ public class Generator {
             d.setItemMeta(e);
             if(a.getBoolean(path + "glowing")) {
                 d.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-//                e.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             return d;
         } catch(Exception ex) {
