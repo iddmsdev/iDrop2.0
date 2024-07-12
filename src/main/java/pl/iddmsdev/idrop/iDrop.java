@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -252,6 +253,25 @@ public final class iDrop extends JavaPlugin implements Listener {
         commandsYML = YamlConfiguration.loadConfiguration(commands);
         messagesYML = YamlConfiguration.loadConfiguration(messages);
     }
+    public static void reloadConfigs() {
+        try {
+            blocksYML.load(blocks);
+            mobsYML.load(mobs);
+            generatorsYML.load(generators);
+            genGuiYML.load(genGUI);
+            genRecipesYML.load(genRecipes);
+            fortuneYML.load(fortune);
+            megadropYML.load(megadrop);
+            dropGuiYML.load(dropGUI);
+            commandsYML.load(commands);
+            messagesYML.load(messages);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot reload configs because of files errors. Maybe try recreate configs again? If that doesn't work try reinstall plugin or just download the newest version. If all of that don't work report it to developer.");
+        } catch (InvalidConfigurationException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot reload configs because of invalid configuration. Check configs for syntax errors!");
+        }
+    }
+
     public static Recipe getRecipeByID(String identifier) {
         if(generatorsYML.getBoolean("enabled")) {
             Recipe recipe = null;

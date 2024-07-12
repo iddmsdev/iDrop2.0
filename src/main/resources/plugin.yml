@@ -7,6 +7,9 @@ description: Plugin for drop from mobs and blocks
 website: iddmsdev.code-blue.pl
 
 commands:
+  idrop:
+    permission: 'idrop.cmd.main'
+    permission-message: 'The main command of iDrop, it contains all of the plugin extensions.'
   idrop-dis:
     permission: 'idrop.admin.dev'
-    description: 'Used to disable iDrop plugin. Recommended only for devs!'
+    permission-message: 'Used to disable iDrop plugin. Recommended only for devs!'

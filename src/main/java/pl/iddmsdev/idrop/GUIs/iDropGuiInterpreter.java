@@ -20,11 +20,12 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+//todo: item dependencies (e.g. guis.example.items.example-item.dependency) and dependency data (in plans used for automated recipes gui)
+
 public class iDropGuiInterpreter implements Listener {
 
     static Set<GUIAction> actions = new HashSet<>();
     private static Map<Inventory, InventoryPath> registeredInventories = new HashMap<>();
-//    private static Map<String,>
 
     public static void registerAction(GUIAction action) {
         actions.add(action);

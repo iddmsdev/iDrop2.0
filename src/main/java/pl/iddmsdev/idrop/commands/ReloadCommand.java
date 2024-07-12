@@ -22,7 +22,7 @@ public class ReloadCommand extends iDropCommandExtension {
     @Override
     public boolean handler(CommandSender sender, String[] args) {
         if(sender.hasPermission("idrop.reload")) {
-            iDrop.setupConfigFiles(false, iDrop.getPlugin(iDrop.class));
+            iDrop.reloadConfigs();
             sender.sendMessage(c(messagesYML.getString("reloaded")));
         } else {
             sender.sendMessage(c(messagesYML.getString("no-permission")));
