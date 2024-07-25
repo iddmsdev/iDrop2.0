@@ -1,0 +1,9 @@
+material: 'ender_eye'
+name: '&5&lRdzeń generatora'
+lore:
+  - '&aTeń rdzeń jest poziomu &d&l%level%&a.'
+  - '&aTakie rdzenie umożliwiaja'
+  - '&astworzyć w craftingu generator'
+  - '&adanego levela.'
+  - '&abWięcej informacji pod /drop generatory'
+glowing: true

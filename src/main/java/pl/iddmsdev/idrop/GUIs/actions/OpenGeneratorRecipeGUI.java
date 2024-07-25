@@ -13,8 +13,6 @@ import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.generators.recipes.Recipe;
 import pl.iddmsdev.idrop.iDrop;
 
-import java.util.Map;
-
 public class OpenGeneratorRecipeGUI implements GUIAction {
     @Override
     public void handler(InventoryClickEvent e, String actionDataPath, FileConfiguration cfg) {
@@ -35,7 +33,7 @@ public class OpenGeneratorRecipeGUI implements GUIAction {
         for(String key : cfg.getConfigurationSection("guis." + recipeGUI + ".items").getKeys(false)) {
             for(String slot : slots) {
                 if(key.equals(slot)) {
-                    ItemStack is = new ItemStack(rec.getItemAtSlot(craftingSlotIndex));
+                    ItemStack is = rec.getItemAtSlot(craftingSlotIndex);
                     ItemMeta im = is.getItemMeta();
                     im.getPersistentDataContainer().set(nKey, PersistentDataType.STRING, "none");
                     is.setItemMeta(im);

@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.wtyczkamc.cores.GeneratorCore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +52,13 @@ public class DropGUI {
                 }
                 String drop = cfg.getString(fpath + "drop");
                 String dpath = "drops." + drop + "."; // dpath - droppath
-                Material mat = Material.valueOf(dropConfig.getString(dpath + "item").toUpperCase());
-                ItemStack item = new ItemStack(mat, 1);
+                ItemStack item;
+                if(dropConfig.getString(dpath + "item").equalsIgnoreCase("gen-core")) {
+                    item = GeneratorCore.getCore(dropConfig.getInt(dpath + "core-level"));
+                } else {
+                    Material mat = Material.valueOf(dropConfig.getString(dpath + "item").toUpperCase());
+                    item = new ItemStack(mat, 1);
+                }
                 ItemMeta im = item.getItemMeta();
                 String name = col(
                         cfg.getString("drop-item-name").replaceAll("%name%", drop));
@@ -80,6 +86,7 @@ public class DropGUI {
                     int max = 64;
                     if (dropConfig.contains(dpath + "count-max")) max = dropConfig.getInt(dpath + "count-max");
                     int amount = 0;
+                    if(dropConfig.getString(dpath + "item").equalsIgnoreCase("gen-core")) { min = 1; max = 1; }
                     if(min-max==0) {
                         line = line.replaceAll("%count%", String.valueOf(min));
                     } else {

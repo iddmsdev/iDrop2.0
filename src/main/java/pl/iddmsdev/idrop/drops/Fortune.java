@@ -27,9 +27,16 @@ public class Fortune {
             String[] additionArray = cfg.getStringList(fortunePath).get(level - 1).split(" : ");
             int min = Integer.parseInt(additionArray[0]);
             int max = Integer.parseInt(additionArray[1]);
-            int addition = new Random().nextInt(max - min) + min;
-            return current + addition;
+            if(max-min!=0) {
+                int addition = new Random().nextInt(max - min) + min;
+                return current + addition;
+            } else {
+                return current;
+            }
         }
         return current;
+    }
+    public static boolean hasFortuneModifier(String drop, String type) {
+        return cfg.contains(type + "." + drop);
     }
 }

@@ -30,6 +30,7 @@ import pl.iddmsdev.idrop.generators.GeneratorBlocks;
 import pl.iddmsdev.idrop.generators.GeneratorCommand;
 import pl.iddmsdev.idrop.generators.GeneratorsDB;
 import pl.iddmsdev.idrop.generators.recipes.Recipe;
+//import pl.iddmsdev.idrop.wtyczkamc.cores.CraftingWithCore;
 
 import java.awt.*;
 import java.io.File;
@@ -73,18 +74,25 @@ public final class iDrop extends JavaPlugin implements Listener {
     public static FileConfiguration messagesYML;
     private static FileConfiguration megadropTimersYML;
 
+    // wmc
+    public static File cores;
+    public static FileConfiguration coresYML;
+
     public static boolean blockDroppingDirectlyToInv;
     public static boolean mobDroppingDirectlyToInv;
     public static boolean expDroppingDirectlyToPlayer;
 
+    // INFORMACJE O WERSJI:
+    // Wersja forka: 1.0, Wersja pluginu: 2.0-beta
+    // ABV base'a: 10 (ABV z wersji pluginu z którego została zrobionba ta wersja)
+
     // todo:
     // - on all commands replace Player p = (Player) sender; to this + check if sender is not player
     // - remove all hardcoded messages (except logs)
-    // - reloady
 
     @Override
     public void onEnable() {
-        System.out.println("iDrop has just loaded ABV: 10");
+        Bukkit.getLogger().log(Level.INFO, "iDrop has just loaded ABV: W2-P10 ");
         System.out.println("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles(true, this);
@@ -196,7 +204,7 @@ public final class iDrop extends JavaPlugin implements Listener {
         iDropCommand.registerExtension(helpCmd);
         // end of if
 
-        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", "generators", "idrop.generators.user"));
+        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", cfg.getString("generators.label"), "idrop.generators.user"));
         if(megadropYML.getBoolean("enabled")) iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getString("megadrop.label"), "idrop.megadrop.user"));
         iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getString("gui.label"), "idrop.gui"));
         iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getString("reload.label"), "idrop.reload", cfg.getStringList("reload.aliases")));
@@ -206,6 +214,7 @@ public final class iDrop extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 
         Bukkit.getPluginManager().registerEvents(new iDropGuiInterpreter(null, null, null), this);
+//        Bukkit.getPluginManager().registerEvents(new CraftingWithCore(), this);
 
         if(blocksYML.getBoolean("enabled")) Bukkit.getPluginManager().registerEvents(new BlockDrop(), this);
         if(mobsYML.getBoolean("enabled")) Bukkit.getPluginManager().registerEvents(new MobDrop(), this);
@@ -239,6 +248,9 @@ public final class iDrop extends JavaPlugin implements Listener {
             if (!commands.exists()) p.saveResource("commands.yml", false);
             messages = new File(dataFolder, "messages.yml");
             if (!messages.exists()) p.saveResource("messages.yml", false);
+            // wmc
+            cores = new File(dataFolder, "wtyczkamc/cores.yml");
+            if(!cores.exists()) p.saveResource("wtyczkamc/cores.yml", false);
         }
 
         blocksYML = YamlConfiguration.loadConfiguration(blocks);
@@ -252,6 +264,8 @@ public final class iDrop extends JavaPlugin implements Listener {
         dropGuiYML = YamlConfiguration.loadConfiguration(dropGUI);
         commandsYML = YamlConfiguration.loadConfiguration(commands);
         messagesYML = YamlConfiguration.loadConfiguration(messages);
+        // wmc
+        coresYML = YamlConfiguration.loadConfiguration(cores);
     }
     public static void reloadConfigs() {
         try {
@@ -265,6 +279,7 @@ public final class iDrop extends JavaPlugin implements Listener {
             dropGuiYML.load(dropGUI);
             commandsYML.load(commands);
             messagesYML.load(messages);
+            coresYML.load(cores);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot reload configs because of files errors. Maybe try recreate configs again? If that doesn't work try reinstall plugin or just download the newest version. If all of that don't work report it to developer.");
         } catch (InvalidConfigurationException e) {

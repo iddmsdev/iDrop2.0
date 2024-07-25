@@ -6,17 +6,17 @@
 
     <groupId>pl.iddmsdev.idrop</groupId>
     <artifactId>iDrop</artifactId>
-    <version>2.0-beta-v1-dev</version>
+    <version>1.0-(pb-2.0b)</version>
     <packaging>jar</packaging>
 
     <name>iDrop</name>
 
-    <description>Plugin for drop from mobs and blocks</description>
+    <description>Plugin for drop from mobs and blocks - (Wersja dedykowana: wtyczkamc)</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <url>iddms.codeblue-mc.com</url>
+    <url>wtyczkamc.pl</url>
 
     <build>
         <plugins>

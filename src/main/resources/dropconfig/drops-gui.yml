@@ -3,7 +3,7 @@
 enabled: true
 
 # THIS WON'T BE READ BY iDrop GUI INTERPRETER, that means this is only drops-gui.yml feature. Other features like this will be marked with a '*' sign.
-drops: 'drops' # Here type gui that will open after /idrop gui or /idrop gui blocks command. (however you can just configure this in commands.yml)
+drops: 'drops' # Here type gui that will open after /idrop gui.
 
 drop-item-name: '&b&l%name%' # A display name of drop item. Use %name% as drop name (e.g. 'Your drop is: %name%' -> 'Your drop is: stone') or you type 'none' to set default name (for example: on diamond item (in english locale) you will se 'Diamond')
 drop-item-lore: # A description of drop item.

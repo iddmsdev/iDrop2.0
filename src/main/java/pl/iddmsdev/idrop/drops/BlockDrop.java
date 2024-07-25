@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.wtyczkamc.cores.GeneratorCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,25 +79,35 @@ public class BlockDrop implements Listener {
                                     } else {
                                         // SETUP ITEM
                                         // Material
-                                        Material itemMaterial = Material.valueOf(config.getString(fullpath + ".item").toUpperCase());
-                                        // Amount
                                         int amount;
-                                        if (config.getInt(fullpath + ".count-min") == config.getInt(fullpath + ".count-max")) {
-                                            amount = config.getInt(fullpath + ".count-min");
-                                        } else if (config.getInt(fullpath + ".count-min") > 0) {
-                                            int countMin = config.getInt(fullpath + ".count-min");
-                                            int countMax;
-                                            if (config.getInt(fullpath + ".count-max") > 0)
-                                                countMax = config.getInt(fullpath + ".count-max");
-                                            else countMax = 64;
-                                            amount = random.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                        Material itemMaterial;
+                                        boolean isCore = config.getString(fullpath + ".item").equalsIgnoreCase("gen-core");
+                                        ItemStack item;
+                                        if(isCore) {
+                                            item = GeneratorCore.getCore(config.getInt(fullpath + ".core-level"));
+                                            amount = 1;
                                         } else {
-                                            int countMin = 1;
-                                            int countMax;
-                                            if (config.getInt(fullpath + ".count-max") > 0)
-                                                countMax = config.getInt(fullpath + ".count-max");
-                                            else countMax = 64;
-                                            amount = random.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                            itemMaterial = Material.valueOf(config.getString(fullpath + ".item").toUpperCase());
+                                            // Amount
+                                            if (config.getInt(fullpath + ".count-min") == config.getInt(fullpath + ".count-max")) {
+                                                amount = config.getInt(fullpath + ".count-min");
+                                            } else if (config.getInt(fullpath + ".count-min") > 0) {
+                                                int countMin = config.getInt(fullpath + ".count-min");
+                                                int countMax;
+                                                if (config.getInt(fullpath + ".count-max") > 0)
+                                                    countMax = config.getInt(fullpath + ".count-max");
+                                                else countMax = 64;
+                                                amount = random.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                            } else {
+                                                int countMin = 1;
+                                                int countMax;
+                                                if (config.getInt(fullpath + ".count-max") > 0)
+                                                    countMax = config.getInt(fullpath + ".count-max");
+                                                else countMax = 64;
+                                                amount = random.nextInt(countMax + 1 - countMin) * countMin + 1;
+                                            }
+                                            // Finish setup
+                                            item = new ItemStack(itemMaterial, amount);
                                         }
                                         // fortune
                                         double chance = config.getDouble(fullpath + ".chance");
@@ -104,19 +115,20 @@ public class BlockDrop implements Listener {
                                         if(handItem.hasItemMeta()) {
                                             int lvl = handItem.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_BLOCKS);
                                             if(lvl>0) {
-                                                chance = Fortune.modifyChance(path, "blocks", lvl, chance);
-                                                amount = Fortune.modifyAmount(path, "blocks", lvl, amount);
+                                                if(Fortune.hasFortuneModifier(path, "blocks")) {
+                                                    chance = Fortune.modifyChance(path, "blocks", lvl, chance);
+                                                    amount = Fortune.modifyAmount(path, "blocks", lvl, amount);
+                                                }
                                             }
                                         }
                                         if(MegaDrop.hasPlayerMegaDrop(e.getPlayer())) {
                                             chance = MegaDrop.getModifiedChance(path, "blocks", chance);
                                         }
                                         double choice = 100 * random.nextDouble();
-                                        // Finish setup
-                                        ItemStack item = new ItemStack(itemMaterial, amount);
                                         // SETUP DROP
                                         // Chance
                                         if (choice <= chance) {
+                                            item.setAmount(amount);
                                             // Add drop
                                             if(!config.getBoolean(fullpath + ".drop-default-block")) {
                                                 e.setDropItems(false);
@@ -161,6 +173,7 @@ public class BlockDrop implements Listener {
                                                 int finalAmount = random.nextInt(max + 1 - min) + min;
                                                 e.getPlayer().giveExp(finalAmount);
                                             }
+                                            return;
                                         }
                                     }
                                     break;

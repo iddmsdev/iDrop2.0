@@ -41,11 +41,9 @@ public class MobDrop implements Listener {
                                 }
                             }
                             Random rnd = new Random();
-                            System.out.println("ch-w-f: " + chance);
                             if (MegaDrop.hasPlayerMegaDrop(e.getEntity().getKiller())) {
                                 chance = MegaDrop.getModifiedChance(path, "mobs", chance);
                             }
-                            System.out.println("ch-w-md: " + chance);
                             double choice = 100 * rnd.nextDouble();
                             String drop = "drops." + path + ".";
                             if (choice <= chance) {
