@@ -8,17 +8,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
+import pl.iddmsdev.idrop.utils.Miscellaneous;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class Recipe extends ShapedRecipe {
     final String recipeIdentifier;
-    final FileConfiguration recipes = iDrop.genRecipesYML;
+    final ConfigFile recipes = iDrop.genRecipesYML;
     List<Material> crafting = new ArrayList<>();
 
     public String getRecipeIdentifier() {
@@ -36,7 +39,16 @@ public class Recipe extends ShapedRecipe {
     private void setIngredients() {
         for(String str : recipes.getStringList("recipes."+recipeIdentifier+".ingredients")) {
             String[] spl = str.split(" : ");
-            this.setIngredient(spl[0].toUpperCase().charAt(0), Material.valueOf(spl[1].toUpperCase()));
+            Material spl1 = Material.STONE;
+            try {
+                spl1 = Miscellaneous.tryToGetMaterial(recipes.getRawString(spl[1].toUpperCase()));
+            } catch (IllegalArgumentException ex) {
+                String epath = "recipes." + recipeIdentifier + ".ingredients";
+                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                        "File: " + recipes.getFile().getName() +
+                        "Path: " + epath.replaceAll("\\.", " -> "));
+            }
+            this.setIngredient(spl[0].toUpperCase().charAt(0), spl1);
         }
     }
     private String[] compileShape() {

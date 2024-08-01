@@ -4,11 +4,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 public class HelpCommand extends iDropCommandExtension {
 
-    private static final FileConfiguration cfg = iDrop.commandsYML;
-    private static final FileConfiguration msg = iDrop.messagesYML;
+    private static final ConfigFile cfg = iDrop.commandsYML;
+    private static final ConfigFile msg = iDrop.messagesYML;
 
     public HelpCommand(String systemName, String label, String permission) {
         super(systemName, label, permission, cfg.getStringList("help.aliases"));

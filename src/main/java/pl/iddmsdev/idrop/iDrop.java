@@ -30,6 +30,7 @@ import pl.iddmsdev.idrop.generators.GeneratorBlocks;
 import pl.iddmsdev.idrop.generators.GeneratorCommand;
 import pl.iddmsdev.idrop.generators.GeneratorsDB;
 import pl.iddmsdev.idrop.generators.recipes.Recipe;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.awt.*;
 import java.io.File;
@@ -46,32 +47,18 @@ public final class iDrop extends JavaPlugin implements Listener {
 
     public static File dataFolder;
 
-    public static File blocks;
-//    public static File config;
-    public static File mobs;
-    public static File generators;
-    public static File genGUI;
-    public static File genRecipes;
-    public static File fortune;
-    public static File megadrop;
-    public static File dropGUI;
-    public static File commands;
-    public static File messages;
-    private static File megadropTimers;
 
-
-    public static FileConfiguration blocksYML;
-//    public static FileConfiguration configYML;
-    public static FileConfiguration mobsYML;
-    public static FileConfiguration generatorsYML;
-    public static FileConfiguration genGuiYML;
-    public static FileConfiguration genRecipesYML;
-    public static FileConfiguration fortuneYML;
-    public static FileConfiguration megadropYML;
-    public static FileConfiguration dropGuiYML;
-    public static FileConfiguration commandsYML;
-    public static FileConfiguration messagesYML;
-    private static FileConfiguration megadropTimersYML;
+    public static ConfigFile blocksYML;
+    public static ConfigFile mobsYML;
+    public static ConfigFile generatorsYML;
+    public static ConfigFile genGuiYML;
+    public static ConfigFile genRecipesYML;
+    public static ConfigFile fortuneYML;
+    public static ConfigFile megadropYML;
+    public static ConfigFile dropGuiYML;
+    public static ConfigFile commandsYML;
+    public static ConfigFile messagesYML;
+    private static ConfigFile megadropTimersYML;
 
     public static boolean blockDroppingDirectlyToInv;
     public static boolean mobDroppingDirectlyToInv;
@@ -82,12 +69,15 @@ public final class iDrop extends JavaPlugin implements Listener {
     // - remove all hardcoded messages (except logs)
     // - reloady
 
+
+    // NS - Null-Safe
+
     @Override
     public void onEnable() {
-        System.out.println("iDrop has just loaded ABV: 10");
+        System.out.println("iDrop has just loaded ABV: 12");
         System.out.println("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
-        setupConfigFiles(true, this);
+        setupConfigFiles();
         setupListeners();
         setupCommands();
         setupDBs();
@@ -108,11 +98,7 @@ public final class iDrop extends JavaPlugin implements Listener {
                     megadropTimersYML.set(entry.getKey(), entry.getValue());
                 }
             }
-            try {
-                megadropTimersYML.save(megadropTimers);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            megadropTimersYML.save(megadropTimersYML.getFile());
             Bukkit.getLogger().log(Level.INFO, "Megadrop timers saved.");
         }
         System.out.println("iDrop disabled. Bye!");
@@ -133,7 +119,7 @@ public final class iDrop extends JavaPlugin implements Listener {
                         MegaDrop.setPlayerTimer(p, (int) megadropTimersYML.get(p.getUniqueId().toString()));
                         continue;
                     } catch (Exception ex) {
-                        Bukkit.getLogger().log(Level.SEVERE, "Cannot get player timer for some reasons. (iDrop, ln:106-107) \n" +
+                        Bukkit.getLogger().log(Level.SEVERE, "Cannot get player timer for some reasons. (iDrop, ln:121) \n" +
                                 "Details: \n" +
                                 "Player: " + p.getName() + ", UUID: " + p.getUniqueId() + "\n" +
                                 "Contains: " + megadropTimersYML.contains(p.getUniqueId().toString()) + "\n" +
@@ -159,7 +145,7 @@ public final class iDrop extends JavaPlugin implements Listener {
         if(generatorsYML.getBoolean("enabled")) {
             for (String key : genRecipesYML.getConfigurationSection("recipes").getKeys(false)) {
                 String id = genRecipesYML.getString("recipes." + key + ".result");
-                ItemStack is = new Generator("idrop-g:" + id, generatorsYML, id).getItem();
+                ItemStack is = new Generator("idrop-g:" + id, id).getItem();
                 NamespacedKey namespacedKey = new NamespacedKey(this, "idrop-gen-recipe." + key);
                 Recipe rec = new Recipe(namespacedKey, is, key);
                 rec.assignToPlugin();
@@ -180,7 +166,7 @@ public final class iDrop extends JavaPlugin implements Listener {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);
             CommandMap commandMap = (CommandMap) bukkitCommandMap.get(getServer());
-            commandMap.register(this.getName(), new iDropCommand(commandsYML.getString("idrop.label")));
+            commandMap.register(this.getName(), new iDropCommand(commandsYML.getRawString("idrop.label")));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Report it to developer!");
         }
@@ -188,18 +174,18 @@ public final class iDrop extends JavaPlugin implements Listener {
 
         // IDROP EXTENSIONS
 
-        FileConfiguration cfg = commandsYML;
+        ConfigFile cfg = commandsYML;
 
         // if valid value in config is set:
-        iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", cfg.getString("help.label"), "all");
+        iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", cfg.getRawString("help.label"), "all");
         iDropCommand.setHelpCommand(helpCmd);
         iDropCommand.registerExtension(helpCmd);
         // end of if
 
-        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", "generators", "idrop.generators.user"));
-        if(megadropYML.getBoolean("enabled")) iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getString("megadrop.label"), "idrop.megadrop.user"));
-        iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getString("gui.label"), "idrop.gui"));
-        iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getString("reload.label"), "idrop.reload", cfg.getStringList("reload.aliases")));
+        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", cfg.getRawString("generators.label"), "idrop.generators.user"));
+        if(megadropYML.getBoolean("enabled")) iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getRawString("megadrop.label"), "idrop.megadrop.user"));
+        iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getRawString("gui.label"), "idrop.gui"));
+        iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getRawString("reload.label"), "idrop.reload", cfg.getRawStringList("reload.aliases")));
     }
 
     private void setupListeners() {
@@ -214,62 +200,30 @@ public final class iDrop extends JavaPlugin implements Listener {
     }
 
     // sf -> setupFiles
-    public static void setupConfigFiles(boolean sf, Plugin p) {
-        // zrobic cos z tym
-        if(sf) {
-            blocks = new File(dataFolder, "dropconfig/blocks.yml");
-            if (!blocks.exists()) p.saveResource("dropconfig/blocks.yml", false);
-            mobs = new File(dataFolder, "dropconfig/mobs.yml");
-            if (!mobs.exists()) p.saveResource("dropconfig/mobs.yml", false);
-            generators = new File(dataFolder, "generators/generators.yml");
-            if (!generators.exists()) p.saveResource("generators/generators.yml", false);
-            genGUI = new File(dataFolder, "generators/gen-gui.yml");
-            if (!genGUI.exists()) p.saveResource("generators/gen-gui.yml", false);
-            genRecipes = new File(dataFolder, "generators/gen-recipes.yml");
-            if (!genRecipes.exists()) p.saveResource("generators/gen-recipes.yml", false);
-            fortune = new File(dataFolder, "dropconfig/fortune.yml");
-            if (!fortune.exists()) p.saveResource("dropconfig/fortune.yml", false);
-            megadrop = new File(dataFolder, "dropconfig/megadrop.yml");
-            if (!megadrop.exists()) p.saveResource("dropconfig/megadrop.yml", false);
-            megadropTimers = new File(dataFolder, "data/megadrop-timers.yml");
-            if (!megadropTimers.exists()) p.saveResource("data/megadrop-timers.yml", false);
-            dropGUI = new File(dataFolder, "dropconfig/drops-gui.yml");
-            if (!dropGUI.exists()) p.saveResource("dropconfig/drops-gui.yml", false);
-            commands = new File(dataFolder, "commands.yml");
-            if (!commands.exists()) p.saveResource("commands.yml", false);
-            messages = new File(dataFolder, "messages.yml");
-            if (!messages.exists()) p.saveResource("messages.yml", false);
-        }
-
-        blocksYML = YamlConfiguration.loadConfiguration(blocks);
-        mobsYML = YamlConfiguration.loadConfiguration(mobs);
-        generatorsYML = YamlConfiguration.loadConfiguration(generators);
-        genGuiYML = YamlConfiguration.loadConfiguration(genGUI);
-        genRecipesYML = YamlConfiguration.loadConfiguration(genRecipes);
-        fortuneYML = YamlConfiguration.loadConfiguration(fortune);
-        megadropYML = YamlConfiguration.loadConfiguration(megadrop);
-        megadropTimersYML = YamlConfiguration.loadConfiguration(megadropTimers);
-        dropGuiYML = YamlConfiguration.loadConfiguration(dropGUI);
-        commandsYML = YamlConfiguration.loadConfiguration(commands);
-        messagesYML = YamlConfiguration.loadConfiguration(messages);
+    private void setupConfigFiles() {
+        blocksYML = new ConfigFile(this, "dropconfig/blocks.yml");
+        mobsYML = new ConfigFile(this, "dropconfig/mobs.yml");
+        generatorsYML = new ConfigFile(this, "generators/generators.yml");
+        genGuiYML = new ConfigFile(this, "generators/gen-gui.yml");
+        genRecipesYML = new ConfigFile(this, "generators/gen-recipes.yml");
+        fortuneYML = new ConfigFile(this, "dropconfig/fortune.yml");
+        dropGuiYML = new ConfigFile(this, "dropconfig/drops-gui.yml");
+        megadropYML = new ConfigFile(this, "dropconfig/megadrop.yml");
+        commandsYML = new ConfigFile(this, "commands.yml");
+        messagesYML = new ConfigFile(this, "messages.yml");
+        megadropTimersYML = new ConfigFile(this, "data/megadrop-timers.yml");
     }
     public static void reloadConfigs() {
-        try {
-            blocksYML.load(blocks);
-            mobsYML.load(mobs);
-            generatorsYML.load(generators);
-            genGuiYML.load(genGUI);
-            genRecipesYML.load(genRecipes);
-            fortuneYML.load(fortune);
-            megadropYML.load(megadrop);
-            dropGuiYML.load(dropGUI);
-            commandsYML.load(commands);
-            messagesYML.load(messages);
-        } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Cannot reload configs because of files errors. Maybe try recreate configs again? If that doesn't work try reinstall plugin or just download the newest version. If all of that don't work report it to developer.");
-        } catch (InvalidConfigurationException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Cannot reload configs because of invalid configuration. Check configs for syntax errors!");
-        }
+        blocksYML.reload();
+        mobsYML.reload();
+        generatorsYML.reload();
+        genGuiYML.reload();
+        genRecipesYML.reload();
+        fortuneYML.reload();
+        megadropYML.reload();
+        commandsYML.reload();
+        messagesYML.reload();
+        dropGuiYML.reload();
     }
 
     public static Recipe getRecipeByID(String identifier) {

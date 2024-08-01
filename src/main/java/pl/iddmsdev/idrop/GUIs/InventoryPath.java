@@ -1,9 +1,10 @@
 package pl.iddmsdev.idrop.GUIs;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 public class InventoryPath {
-    private final FileConfiguration cfg;
+    private final ConfigFile cfg;
     private final String fpath;
     private final String variables;
     private final String actionData;
@@ -17,7 +18,7 @@ public class InventoryPath {
         return actionData;
     }
 
-    public FileConfiguration getConfig() {
+    public ConfigFile getConfig() {
         return cfg;
     }
 
@@ -28,7 +29,7 @@ public class InventoryPath {
         return variable;
     }
 
-    public InventoryPath(FileConfiguration cfg, String fpath, String variables, String actionData, String variable) {
+    public InventoryPath(ConfigFile cfg, String fpath, String variables, String actionData, String variable) {
         this.cfg = cfg;
         this.fpath = fpath;
         this.variables = variables;

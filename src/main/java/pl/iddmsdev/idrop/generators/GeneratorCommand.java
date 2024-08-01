@@ -10,22 +10,23 @@ import org.bukkit.inventory.ItemStack;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.iDropCommandExtension;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GeneratorCommand extends iDropCommandExtension {
 
-    FileConfiguration gens = iDrop.generatorsYML;
-    FileConfiguration gengui = iDrop.genGuiYML;
+    ConfigFile gens = iDrop.generatorsYML;
+    ConfigFile gengui = iDrop.genGuiYML;
 
     // Todo:
     // - STRUCTURE (-D = default/don't need args, -DH = if not args, print help):
     // USERS: /idrop generators [menu-D/recipes/list]
     // ADMIN: /idrop generators <admin-DH> ([get] -> [genid/all])
 
-    private static final FileConfiguration cfg = iDrop.commandsYML;
-    private static final FileConfiguration msg = iDrop.messagesYML;
+    private static final ConfigFile cfg = iDrop.commandsYML;
+    private static final ConfigFile msg = iDrop.messagesYML;
 
     public GeneratorCommand(String systemName, String label, String permission) {
         super(systemName, label, permission, cfg.getStringList("generators.aliases"));
@@ -76,7 +77,7 @@ public class GeneratorCommand extends iDropCommandExtension {
                             if (isValidArguments(adminGetAllL, adminGetAllA, args[2])) {
                                 List<Generator> generatorsToGive = new ArrayList<>();
                                 for (String key : gens.getConfigurationSection("generators").getKeys(false)) {
-                                    Generator gen = new Generator("idrop-g:" + key, gens, key);
+                                    Generator gen = new Generator("idrop-g:" + key, key);
                                     generatorsToGive.add(gen);
                                 }
                                 for (Generator gen : generatorsToGive) {
@@ -88,7 +89,7 @@ public class GeneratorCommand extends iDropCommandExtension {
                             } else {
                                 for (String key : gens.getConfigurationSection("generators").getKeys(false)) {
                                     if (key.equalsIgnoreCase(args[2])) {
-                                        Generator gen = new Generator("idrop-g:" + key, gens, key);
+                                        Generator gen = new Generator("idrop-g:" + key, key);
                                         Player p = (Player) sender;
                                         Location loc = p.getLocation();
                                         p.getWorld().dropItemNaturally(loc, gen.getItem());

@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import pl.iddmsdev.idrop.commands.iDropCommandExtension;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class MegaDropCommand extends iDropCommandExtension {
 
-    private static final FileConfiguration cfg = iDrop.commandsYML;
-    private static final FileConfiguration msg = iDrop.messagesYML;
+    private static final ConfigFile cfg = iDrop.commandsYML;
+    private static final ConfigFile msg = iDrop.messagesYML;
 
     public MegaDropCommand(String systemName, String label, String permission) {
         super(systemName, label, permission, cfg.getStringList("megadrop.aliases"));

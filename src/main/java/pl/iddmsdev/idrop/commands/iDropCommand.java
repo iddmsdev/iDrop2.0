@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import pl.iddmsdev.idrop.drops.gui.DropGUI;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.*;
 
@@ -18,16 +19,16 @@ public class iDropCommand extends BukkitCommand {
     // TODO: add translations
 
     private static iDropCommandExtension helpCommand;
-    private static final FileConfiguration cfg = iDrop.commandsYML;
-    private static final FileConfiguration msg = iDrop.messagesYML;
+    private static final ConfigFile cfg = iDrop.commandsYML;
+    private static final ConfigFile msg = iDrop.messagesYML;
 
     private static final Set<iDropCommandExtension> extensions = new HashSet<>();
 
     public iDropCommand(String name) {
         super(name);
         this.description = "Main drop command.";
-        if (cfg.contains("idrop.aliases") && cfg.isList("idrop.aliases") && !cfg.getStringList("idrop.aliases").isEmpty()) {
-            this.setAliases(cfg.getStringList("idrop.aliases"));
+        if (cfg.contains("idrop.aliases") && cfg.isList("idrop.aliases") && !cfg.getRawStringList("idrop.aliases").isEmpty()) {
+            this.setAliases(cfg.getRawStringList("idrop.aliases"));
         }
     }
 

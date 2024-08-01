@@ -1,5 +1,6 @@
 package pl.iddmsdev.idrop.drops.gui;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -11,18 +12,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
+import pl.iddmsdev.idrop.utils.Miscellaneous;
+import pl.iddmsdev.idrop.utils.Prefabs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class DropGUI {
 
 
-    private final FileConfiguration cfg = iDrop.dropGuiYML;
-    private final FileConfiguration msg = iDrop.messagesYML;
+    private final ConfigFile cfg = iDrop.dropGuiYML;
+    private final ConfigFile msg = iDrop.messagesYML;
     private final Player player;
 
     public DropGUI(Player p) {
@@ -37,7 +42,7 @@ public class DropGUI {
         for (String path : cfg.getConfigurationSection("guis." + guiPath + ".items").getKeys(false)) {
             String fpath = "guis." + guiPath + ".items." + path + ".";
             if (cfg.contains(fpath + "drop") && cfg.contains(fpath + "drop-type")) {
-                FileConfiguration dropConfig;
+                ConfigFile dropConfig;
                 String lfrom; // Localized from (it can be blocks or mobs)
                 String lobtained; // Localized obtained (it can be pickaxes or tools)
                 if (cfg.getString(fpath + "drop-type").equalsIgnoreCase("blocks")) {
@@ -51,8 +56,17 @@ public class DropGUI {
                 }
                 String drop = cfg.getString(fpath + "drop");
                 String dpath = "drops." + drop + "."; // dpath - droppath
-                Material mat = Material.valueOf(dropConfig.getString(dpath + "item").toUpperCase());
-                ItemStack item = new ItemStack(mat, 1);
+                Material mat;
+                ItemStack item;
+                try {
+                    mat = Miscellaneous.tryToGetMaterial(dropConfig.getRawString(dpath + "item"));
+                } catch (IllegalArgumentException ex) {
+                    Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                            "File: " + dropConfig.getFile().getName() +
+                            "Path: " + path.replaceAll("\\.", " -> "));
+                    return;
+                }
+                item = new ItemStack(mat, 1);
                 ItemMeta im = item.getItemMeta();
                 String name = col(
                         cfg.getString("drop-item-name").replaceAll("%name%", drop));

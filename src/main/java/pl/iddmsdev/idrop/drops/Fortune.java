@@ -3,6 +3,7 @@ package pl.iddmsdev.idrop.drops;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.Random;
 
@@ -10,7 +11,7 @@ public class Fortune {
 
     // TODO: Mob fortune
 
-    private final static FileConfiguration cfg = iDrop.fortuneYML;
+    private final static ConfigFile cfg = iDrop.fortuneYML;
 
     public static double modifyChance(String drop, String type, int level, double current) {
         if (cfg.getBoolean("enabled")) {
@@ -32,4 +33,9 @@ public class Fortune {
         }
         return current;
     }
+
+    public static boolean hasFortuneModifier(String drop, String type) {
+        return cfg.contains(type + "." + drop);
+    }
+
 }

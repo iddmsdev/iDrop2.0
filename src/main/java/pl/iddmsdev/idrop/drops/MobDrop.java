@@ -14,14 +14,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
+import pl.iddmsdev.idrop.utils.Miscellaneous;
+import pl.iddmsdev.idrop.utils.Prefabs;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class MobDrop implements Listener {
 
-    FileConfiguration config = iDrop.mobsYML;
+    ConfigFile config = iDrop.mobsYML;
 
     @EventHandler
     public void onMobDeath(EntityDeathEvent e) {
@@ -41,11 +45,9 @@ public class MobDrop implements Listener {
                                 }
                             }
                             Random rnd = new Random();
-                            System.out.println("ch-w-f: " + chance);
                             if (MegaDrop.hasPlayerMegaDrop(e.getEntity().getKiller())) {
                                 chance = MegaDrop.getModifiedChance(path, "mobs", chance);
                             }
-                            System.out.println("ch-w-md: " + chance);
                             double choice = 100 * rnd.nextDouble();
                             String drop = "drops." + path + ".";
                             if (choice <= chance) {
@@ -54,16 +56,35 @@ public class MobDrop implements Listener {
                                 if (config.getBoolean(drop + "tools.enabled")) {
                                     if (!config.getStringList(drop + "tools.items").isEmpty()) {
                                         for (String toolName : config.getStringList(drop + "tools.items")) {
-                                            if (!e.getEntity().getKiller().getInventory().getItemInMainHand().getType().equals(
-                                                    Material.valueOf(toolName.toUpperCase()))) {
+                                            Material tMat = Material.AIR;
+                                            try {
+                                                tMat = Miscellaneous.tryToGetMaterial(config.getRawString(toolName));
+                                            } catch (IllegalArgumentException ex) {
+                                                String epath = drop + "tools.items";
+                                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                                        "File: " + config.getFile().getName() +
+                                                        "Path: " + epath.replaceAll("\\.", " -> "));
+                                                e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
+                                            }
+                                            if (e.getEntity().getKiller().getInventory().getItemInMainHand().getType()!=tMat) {
                                                 isValidTool = false;
                                             } else isValidTool = true;
                                             break;
                                         }
                                     } else {
                                         String toolName = config.getString(drop + "tools.items");
-                                        if (!e.getEntity().getKiller().getInventory().getItemInMainHand().getType().equals(
-                                                Material.valueOf(toolName.toUpperCase()))) isValidTool = false;
+                                        Material tMat = Material.AIR;
+                                        try {
+                                            tMat = Miscellaneous.tryToGetMaterial(config.getRawString(toolName));
+                                        } catch (IllegalArgumentException ex) {
+                                            String epath = drop + "tools.items";
+                                            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                                    "File: " + config.getFile().getName() +
+                                                    "Path: " + epath.replaceAll("\\.", " -> "));
+                                            e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
+                                        }
+                                        if (e.getEntity().getKiller().getInventory().getItemInMainHand().getType()!=tMat)
+                                            isValidTool = false;
                                     }
                                 }
                                 if (isValidTool) {
@@ -74,7 +95,17 @@ public class MobDrop implements Listener {
                                     } else mobs.add(EntityType.valueOf(config.getString(drop + "mobs").toUpperCase()));
                                     if (mobs.contains(e.getEntityType())) {
                                         // creating item
-                                        Material type = Material.valueOf(config.getString(drop + "item").toUpperCase());
+                                        Material type;
+                                        try {
+                                            type = Miscellaneous.tryToGetMaterial(config.getString(drop + "item"));
+                                        } catch(IllegalArgumentException ex) {
+                                            type = Material.STONE;
+                                            String epath = drop + ".item";
+                                            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors w ith this item. Here's info:" +
+                                                    "File: " + config.getFile().getName() +
+                                                    "Path: " + epath.replaceAll("\\.", " -> "));
+                                            e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
+                                        }
                                         // amount
                                         if (config.getInt(drop + "count-min") == config.getInt(drop + "count-max")) {
                                             amount += config.getInt(drop + "count-min");

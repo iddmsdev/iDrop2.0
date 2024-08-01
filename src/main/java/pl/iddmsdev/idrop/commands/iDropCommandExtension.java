@@ -3,6 +3,7 @@ package pl.iddmsdev.idrop.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public abstract class iDropCommandExtension {
     public abstract String getUsage();
 
     protected boolean isValidArguments(String labelPath, String aliasesPath, String arg) {
-        FileConfiguration cfg = iDrop.commandsYML;
+        ConfigFile cfg = iDrop.commandsYML;
         if(cfg.isString(labelPath) && cfg.getString(labelPath).equalsIgnoreCase(arg)) {
             return true;
         } else if(cfg.isList(aliasesPath)) {

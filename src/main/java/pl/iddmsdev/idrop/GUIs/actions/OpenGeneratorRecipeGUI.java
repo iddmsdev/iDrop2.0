@@ -12,12 +12,13 @@ import pl.iddmsdev.idrop.GUIs.GUIAction;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.generators.recipes.Recipe;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.Map;
 
 public class OpenGeneratorRecipeGUI implements GUIAction {
     @Override
-    public void handler(InventoryClickEvent e, String actionDataPath, FileConfiguration cfg) {
+    public void handler(InventoryClickEvent e, String actionDataPath, ConfigFile cfg) {
         Player p = (Player) e.getWhoClicked();
         iDropGuiInterpreter interpreter = new iDropGuiInterpreter(cfg, "guis", "variables");
         String recipeGUI = cfg.getString(actionDataPath + ".gui");

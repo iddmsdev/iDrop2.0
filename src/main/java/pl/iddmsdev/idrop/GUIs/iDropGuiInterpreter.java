@@ -15,6 +15,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
+import pl.iddmsdev.idrop.utils.Miscellaneous;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -33,7 +35,7 @@ public class iDropGuiInterpreter implements Listener {
 
     // IT'S VERY IMPORTANT! YOU CAN CREATE MULTIPLE GUI CONFIG FILES, BUT THE THEME MUST BE THE SAME AS IN OTHERS!!
 
-    private final FileConfiguration a; // gui config yml
+    private final ConfigFile a; // gui config yml
     private final String b; // GUIs path (def: guis)
     private final String c; // Variables path (def: variables)
     private final String d; // GUI title path (def: guis-path.title)
@@ -47,7 +49,7 @@ public class iDropGuiInterpreter implements Listener {
     private final String l; // GUI item amount path (def: guis-path.items.item-path.amount)
     private final String m; // GUI item action data path (def: guis-path.items.item.item-path.action-data)
 
-    public iDropGuiInterpreter(FileConfiguration config, String GUIsPath, String variablesPath) {
+    public iDropGuiInterpreter(ConfigFile config, String GUIsPath, String variablesPath) {
         this.a = config;
         this.b = GUIsPath;
         this.c = variablesPath;
@@ -63,7 +65,7 @@ public class iDropGuiInterpreter implements Listener {
         this.m = "action-data";
     }
 
-    public iDropGuiInterpreter(FileConfiguration config, String GUIsPath, String variablesPath, String GUITitlePath, String GUIRowsPath, String GUIItemsPath, String itemMaterialPath, String itemNamePath, String itemLorePath, String itemActionPath, String itemVariablePath, String itemAmountPath, String itemActionDataPath) {
+    public iDropGuiInterpreter(ConfigFile config, String GUIsPath, String variablesPath, String GUITitlePath, String GUIRowsPath, String GUIItemsPath, String itemMaterialPath, String itemNamePath, String itemLorePath, String itemActionPath, String itemVariablePath, String itemAmountPath, String itemActionDataPath) {
         this.a = config;
         this.b = GUIsPath;
         this.c = variablesPath;
@@ -85,7 +87,7 @@ public class iDropGuiInterpreter implements Listener {
             String fpath = b + "." + GUIName + ".";
             String title = a.getString(fpath + d);
             int size = a.getInt(fpath + e) * 9;
-            Inventory returnable = Bukkit.createInventory(null, size, colorize(title));
+            Inventory returnable = Bukkit.createInventory(null, size, title);
             List<ItemStack> items = compileItems(compileVariables(), GUIName);
             int i = 0;
             for (ItemStack item : items) {
@@ -107,16 +109,25 @@ public class iDropGuiInterpreter implements Listener {
         for (String key : a.getConfigurationSection(c).getKeys(false)) {
             String fpath = c + "." + key + ".";
             try {
-                Material mat = Material.valueOf(a.getString(fpath + g).toUpperCase());
+                Material mat;
+                try {
+                    mat = Miscellaneous.tryToGetMaterial(a.getRawString(fpath + g));
+                } catch(IllegalArgumentException ex) {
+                    mat = Material.STONE;
+                    String epath = fpath + g;
+                    Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                            "File: " + a.getFile().getName() +
+                            "Path: " + epath.replaceAll("\\.", " -> "));
+                }
                 int amount = a.getInt(fpath + l);
                 amount = (amount == 0) ? 1 : amount;
                 ItemStack item = new ItemStack(mat, amount);
                 ItemMeta im = item.getItemMeta();
                 if (a.getString(fpath + h) != null) {
                     if (a.getString(fpath + h).equals("")) im.setDisplayName("§r");
-                    else im.setDisplayName(colorize(a.getString(fpath + h)));
+                    else im.setDisplayName(a.getString(fpath + h));
                 }
-                im.setLore(a.getStringList(fpath + i).stream().map(this::colorize).collect(Collectors.toList()));
+                im.setLore(a.getStringList(fpath + i));
                 PersistentDataContainer pdc = im.getPersistentDataContainer();
                 NamespacedKey nKey = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
                 if (a.getString(fpath + j) != null) {
@@ -142,7 +153,7 @@ public class iDropGuiInterpreter implements Listener {
                 String var = a.getString(fpath + k);
                 if (var != null && variables.containsKey(var)) {
                     returnable.add(variables.get(var));
-                } else if (var != null && !variables.containsKey(var)) {
+                } else if (a.contains(fpath + k) && a.isString(fpath + k) && !variables.containsKey(var)) {
                     ItemStack item = new ItemStack(Material.STONE);
                     ItemMeta im = item.getItemMeta();
                     im.setDisplayName("Unrecognized variable: " + var);
@@ -154,14 +165,23 @@ public class iDropGuiInterpreter implements Listener {
                         returnable.add(new ItemStack(Material.AIR, 0));
                         continue;
                     }
-                    Material mat = Material.valueOf(a.getString(fpath + g).toUpperCase());
+                    Material mat;
+                    try {
+                         mat = Miscellaneous.tryToGetMaterial(a.getRawString(fpath + g));
+                    } catch (IllegalArgumentException ex) {
+                        String epath = fpath + g;
+                        Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                "File: " + a.getFile().getName() +
+                                "Path: " + epath.replaceAll("\\.", " -> "));
+                        mat = Material.STONE;
+                    }
                     int amount = a.getInt(fpath + l);
                     amount = (amount == 0) ? 1 : amount;
                     ItemStack item = new ItemStack(mat, amount);
                     ItemMeta im = item.getItemMeta();
                     if (a.getString(fpath + h) != null) {
                         if (a.getString(fpath + h).equals("")) im.setDisplayName("§r");
-                        else im.setDisplayName(colorize(a.getString(fpath + h)));
+                        else im.setDisplayName(a.getString(fpath + h));
                     }
                     PersistentDataContainer pdc = im.getPersistentDataContainer();
                     NamespacedKey nKey = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
@@ -170,7 +190,7 @@ public class iDropGuiInterpreter implements Listener {
                     } else {
                         pdc.set(nKey, PersistentDataType.STRING, "none");
                     }
-                    im.setLore(a.getStringList(fpath + i).stream().map(this::colorize).collect(Collectors.toList()));
+                    im.setLore(a.getStringList(fpath + i));
                     item.setItemMeta(im);
                     returnable.add(item);
                 }
@@ -180,10 +200,6 @@ public class iDropGuiInterpreter implements Listener {
             }
         }
         return returnable;
-    }
-
-    private String colorize(String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
     @EventHandler
@@ -226,7 +242,7 @@ public class iDropGuiInterpreter implements Listener {
                                         }
                                         itemIndex++;
                                     }
-                                    FileConfiguration config = invPath.getConfig();
+                                    ConfigFile config = invPath.getConfig();
                                     guiAction.handler(e, actionDataPath, config);
                                 }
                                 return;

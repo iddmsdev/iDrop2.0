@@ -15,13 +15,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
+import pl.iddmsdev.idrop.utils.Miscellaneous;
+import pl.iddmsdev.idrop.utils.Prefabs;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class BlockDrop implements Listener {
-    FileConfiguration config = iDrop.blocksYML;
+    ConfigFile config = iDrop.blocksYML;
 
     // event is calling first
     @EventHandler(priority = EventPriority.LOWEST)
@@ -35,11 +39,28 @@ public class BlockDrop implements Listener {
                         List<Material> pickaxes = new ArrayList<>();
                         if(!config.getStringList("drops." + path + ".pickaxes.items").isEmpty()) {
                             for (String item : config.getStringList("drops." + path + ".pickaxes.items")) {
-                                Material mat = Material.valueOf(item.toUpperCase());
-                                pickaxes.add(mat);
+                                try {
+                                    Material mat = Miscellaneous.tryToGetMaterial(item);
+                                    pickaxes.add(mat);
+                                } catch (IllegalArgumentException ex) {
+                                    String epath = "drops." + path + ".pickaxes.items";
+                                    Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                            "File: " + config.getFile().getName() +
+                                            "Path: " + epath.replaceAll("\\.", " -> "));
+                                    e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                                }
                             }
                         } else if(config.getString("drops."+path+".pickaxes.items")!=null) {
-                            pickaxes.add(Material.valueOf(config.getString("drops."+path+".pickaxes.items").toUpperCase()));
+                            try {
+                                Material mat = Miscellaneous.tryToGetMaterial(config.getRawString("drops."+path+".pickaxes.items"));
+                                pickaxes.add(mat);
+                            } catch (IllegalArgumentException ex) {
+                                String epath = "drops." + path + ".pickaxes.items";
+                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                        "File: " + config.getFile().getName() +
+                                        "Path: " + epath.replaceAll("\\.", " -> "));
+                                e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                            }
                         } else {
                             Bukkit.getLogger().severe("[iDrop] Cannot find required pickaxes in '" + path + "'");
                             continue;
@@ -55,10 +76,28 @@ public class BlockDrop implements Listener {
                         // SETUP BLOCK MATERIALS
                         if (!config.getStringList(fullpath + ".blocks").isEmpty()) {
                             for (String material : config.getStringList(fullpath + ".blocks")) {
-                                blocks.add(Material.valueOf(material.toUpperCase()));
+                                try {
+                                    Material mat = Miscellaneous.tryToGetMaterial(material);
+                                    blocks.add(mat);
+                                } catch(IllegalArgumentException ex) {
+                                    String epath = fullpath + ".blocks";
+                                    Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                            "File: " + config.getFile().getName() +
+                                            "Path: " + epath.replaceAll("\\.", " -> "));
+                                    e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                                }
                             }
                         } else if (config.getString(fullpath + ".blocks") != null) {
-                            blocks.add(Material.valueOf(config.getString(fullpath + ".blocks").toUpperCase()));
+                            try {
+                                Material mat = Miscellaneous.tryToGetMaterial(config.getString(fullpath + ".blocks"));
+                                blocks.add(mat);
+                            } catch(IllegalArgumentException ex) {
+                                String epath = fullpath + ".blocks";
+                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors w ith this item. Here's info:" +
+                                        "File: " + config.getFile().getName() +
+                                        "Path: " + epath.replaceAll("\\.", " -> "));
+                                e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                            }
                         } else {
                             Bukkit.getLogger().severe("[iDrop] Cannot find block materials in drop '" + path + "'");
                             continue;
@@ -78,7 +117,17 @@ public class BlockDrop implements Listener {
                                     } else {
                                         // SETUP ITEM
                                         // Material
-                                        Material itemMaterial = Material.valueOf(config.getString(fullpath + ".item").toUpperCase());
+                                        Material itemMaterial;
+                                        try {
+                                            itemMaterial = Miscellaneous.tryToGetMaterial(config.getString(fullpath + ".item"));
+                                        } catch(IllegalArgumentException ex) {
+                                            itemMaterial = Material.STONE;
+                                            String epath = fullpath + ".item";
+                                            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors w ith this item. Here's info:" +
+                                                    "File: " + config.getFile().getName() +
+                                                    "Path: " + epath.replaceAll("\\.", " -> "));
+                                            e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                                        }
                                         // Amount
                                         int amount;
                                         if (config.getInt(fullpath + ".count-min") == config.getInt(fullpath + ".count-max")) {
@@ -104,8 +153,10 @@ public class BlockDrop implements Listener {
                                         if(handItem.hasItemMeta()) {
                                             int lvl = handItem.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_BLOCKS);
                                             if(lvl>0) {
-                                                chance = Fortune.modifyChance(path, "blocks", lvl, chance);
-                                                amount = Fortune.modifyAmount(path, "blocks", lvl, amount);
+                                                if(Fortune.hasFortuneModifier(path, "blocks")) {
+                                                    chance = Fortune.modifyChance(path, "blocks", lvl, chance);
+                                                    amount = Fortune.modifyAmount(path, "blocks", lvl, amount);
+                                                }
                                             }
                                         }
                                         if(MegaDrop.hasPlayerMegaDrop(e.getPlayer())) {
@@ -137,6 +188,7 @@ public class BlockDrop implements Listener {
                                             }
                                             // Message
                                             if (config.getString(fullpath + ".message") != null) {
+                                                // NS
                                                 e.getPlayer().sendMessage(
                                                         ChatColor.translateAlternateColorCodes('&', config.getString(fullpath + ".message")));
                                             }
@@ -161,6 +213,7 @@ public class BlockDrop implements Listener {
                                                 int finalAmount = random.nextInt(max + 1 - min) + min;
                                                 e.getPlayer().giveExp(finalAmount);
                                             }
+                                            return;
                                         }
                                     }
                                     break;

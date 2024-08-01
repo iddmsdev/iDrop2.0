@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import pl.iddmsdev.idrop.iDrop;
+import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.io.File;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 public class MegaDrop {
 
-    private static FileConfiguration cfg = iDrop.megadropYML;
+    private static ConfigFile cfg = iDrop.megadropYML;
     private static Map<String, Integer> megadropTimer = new HashMap<>();
     private static boolean running = false;
 
