@@ -145,12 +145,16 @@ public final class iDrop extends JavaPlugin implements Listener {
         if(generatorsYML.getBoolean("enabled")) {
             for (String key : genRecipesYML.getConfigurationSection("recipes").getKeys(false)) {
                 String id = genRecipesYML.getString("recipes." + key + ".result");
-                ItemStack is = new Generator("idrop-g:" + id, id).getItem();
-                NamespacedKey namespacedKey = new NamespacedKey(this, "idrop-gen-recipe." + key);
-                Recipe rec = new Recipe(namespacedKey, is, key);
-                rec.assignToPlugin();
-                generatorRecipes.add(rec);
-                getLogger().log(Level.INFO, "Registered new generator crafting: " + key);
+                if(generatorsYML.contains("generators." + id)) {
+                    ItemStack is = new Generator("idrop-g:" + id, id).getItem();
+                    NamespacedKey namespacedKey = new NamespacedKey(this, "idrop-gen-recipe." + key);
+                    Recipe rec = new Recipe(namespacedKey, is, key);
+                    rec.assignToPlugin();
+                    generatorRecipes.add(rec);
+                    getLogger().log(Level.INFO, "Registered new generator crafting: " + key);
+                } else {
+                    getLogger().log(Level.INFO, "Cannot register crafting ("+key+"), because result '"+id+"' doesn't exist.");
+                }
             }
         }
     }
@@ -167,8 +171,8 @@ public final class iDrop extends JavaPlugin implements Listener {
             bukkitCommandMap.setAccessible(true);
             CommandMap commandMap = (CommandMap) bukkitCommandMap.get(getServer());
             commandMap.register(this.getName(), new iDropCommand(commandsYML.getRawString("idrop.label")));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Report it to developer!");
+        } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Check if commands.yml has every command and extension in it. If has and it's common error to you, report it to developer!");
         }
         getCommand("idrop-dis").setExecutor(new Disable());
 

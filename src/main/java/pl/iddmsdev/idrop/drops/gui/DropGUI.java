@@ -63,7 +63,7 @@ public class DropGUI {
                 } catch (IllegalArgumentException ex) {
                     Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
                             "File: " + dropConfig.getFile().getName() +
-                            "Path: " + path.replaceAll("\\.", " -> "));
+                            "Path: " + (dpath + "item").replaceAll("\\.", " -> "));
                     return;
                 }
                 item = new ItemStack(mat, 1);

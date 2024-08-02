@@ -58,10 +58,10 @@ public class MobDrop implements Listener {
                                         for (String toolName : config.getStringList(drop + "tools.items")) {
                                             Material tMat = Material.AIR;
                                             try {
-                                                tMat = Miscellaneous.tryToGetMaterial(config.getRawString(toolName));
+                                                tMat = Miscellaneous.tryToGetMaterial(toolName);
                                             } catch (IllegalArgumentException ex) {
                                                 String epath = drop + "tools.items";
-                                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
+                                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info: " +
                                                         "File: " + config.getFile().getName() +
                                                         "Path: " + epath.replaceAll("\\.", " -> "));
                                                 e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
@@ -75,7 +75,7 @@ public class MobDrop implements Listener {
                                         String toolName = config.getString(drop + "tools.items");
                                         Material tMat = Material.AIR;
                                         try {
-                                            tMat = Miscellaneous.tryToGetMaterial(config.getRawString(toolName));
+                                            tMat = Miscellaneous.tryToGetMaterial(toolName);
                                         } catch (IllegalArgumentException ex) {
                                             String epath = drop + "tools.items";
                                             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
@@ -91,8 +91,32 @@ public class MobDrop implements Listener {
                                     // checking mob validity
                                     List<EntityType> mobs = new ArrayList<>();
                                     if (!config.getStringList(drop + "mobs").isEmpty()) {
-                                        config.getStringList(drop + "mobs").forEach(mob -> mobs.add(EntityType.valueOf(mob.toUpperCase())));
-                                    } else mobs.add(EntityType.valueOf(config.getString(drop + "mobs").toUpperCase()));
+                                        for (String mob : config.getStringList(drop + "mobs")) {
+                                            try {
+                                                EntityType entityType = EntityType.valueOf(mob.toUpperCase());
+                                                mobs.add(entityType);
+                                            } catch (IllegalArgumentException ex) {
+                                                String epath = drop + "mobs";
+                                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this mob. Here's info:\n" +
+                                                        "File: " + config.getFile().getName() + "\n" +
+                                                        "Path: " + epath.replaceAll("\\.", " -> "));
+                                                e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
+                                                return;
+                                            }
+                                        }
+                                    } else {
+                                        try {
+                                            EntityType entityType = EntityType.valueOf(config.getString(drop + "mobs").toUpperCase());
+                                            mobs.add(entityType);
+                                        } catch (IllegalArgumentException ex) {
+                                            String epath = drop + "mobs";
+                                            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this mob. Here's info:\n" +
+                                                    "File: " + config.getFile().getName() + "\n" +
+                                                    "Path: " + epath.replaceAll("\\.", " -> "));
+                                            e.getEntity().getKiller().sendMessage("§c[iDrop] Check console for errors.");
+                                            return;
+                                        }
+                                    }
                                     if (mobs.contains(e.getEntityType())) {
                                         // creating item
                                         Material type;

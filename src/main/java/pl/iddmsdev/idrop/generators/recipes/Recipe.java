@@ -32,20 +32,25 @@ public class Recipe extends ShapedRecipe {
         super(key, result);
         this.recipeIdentifier = recipeIdentifier;
         String[] shape = compileShape();
-        this.shape(shape[0], shape[1], shape[2]);
-        setIngredients();
-        addCraftingSlot();
+        try {
+            this.shape(shape[0], shape[1], shape[2]);
+            setIngredients();
+            addCraftingSlot();
+        }
+        catch(IllegalArgumentException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check if your recipes."+recipeIdentifier+".crafting and ingredients have valid syntax.");
+        }
     }
     private void setIngredients() {
         for(String str : recipes.getStringList("recipes."+recipeIdentifier+".ingredients")) {
             String[] spl = str.split(" : ");
             Material spl1 = Material.STONE;
             try {
-                spl1 = Miscellaneous.tryToGetMaterial(recipes.getRawString(spl[1].toUpperCase()));
+                spl1 = Miscellaneous.tryToGetMaterial(spl[1]);
             } catch (IllegalArgumentException ex) {
                 String epath = "recipes." + recipeIdentifier + ".ingredients";
-                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info:" +
-                        "File: " + recipes.getFile().getName() +
+                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors with this item. Here's info: \n" +
+                        "File: " + recipes.getFile().getName() + "\n" +
                         "Path: " + epath.replaceAll("\\.", " -> "));
             }
             this.setIngredient(spl[0].toUpperCase().charAt(0), spl1);

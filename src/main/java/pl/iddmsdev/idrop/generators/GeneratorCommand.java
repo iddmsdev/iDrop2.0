@@ -1,5 +1,6 @@
 package pl.iddmsdev.idrop.generators;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import pl.iddmsdev.idrop.utils.ConfigFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class GeneratorCommand extends iDropCommandExtension {
 
@@ -145,6 +147,10 @@ public class GeneratorCommand extends iDropCommandExtension {
 
     private void openGUI(Player p, String gui) {
         iDropGuiInterpreter interpreter = new iDropGuiInterpreter(gengui, "guis", "variables");
+        if(interpreter.compile(gui)==null) {
+            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's no gui like " + gui + ". Check if everything is correct. (generators.yml)");
+            return;
+        }
         p.openInventory(interpreter.compile(gui));
     }
 
