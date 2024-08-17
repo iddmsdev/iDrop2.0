@@ -92,7 +92,7 @@ public final class iDrop extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getLogger().log(Level.INFO, "iDrop has just loaded ABV: W2-P10 ");
+        Bukkit.getLogger().log(Level.INFO, "iDrop has just loaded ABV: W3-P10 ");
         System.out.println("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles(true, this);

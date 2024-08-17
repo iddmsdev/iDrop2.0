@@ -6,7 +6,7 @@
 
     <groupId>pl.iddmsdev.idrop</groupId>
     <artifactId>iDrop</artifactId>
-    <version>1.0-(pb-2.0b)</version>
+    <version>1.0.1-(pb-2.0b)</version>
     <packaging>jar</packaging>
 
     <name>iDrop</name>
