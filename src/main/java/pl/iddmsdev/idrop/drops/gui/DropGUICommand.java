@@ -11,29 +11,26 @@ import pl.iddmsdev.idrop.utils.ConfigFile;
 public class DropGUICommand extends iDropCommandExtension {
     private static final ConfigFile cfg = iDrop.commandsYML;
     private static final ConfigFile msg = iDrop.messagesYML;
+
     public DropGUICommand(String systemName, String label, String permission) {
         super(systemName, label, permission, cfg.getStringList("gui.aliases"));
     }
 
     @Override
     public String getUsage() {
-        return colorize(cfg.getString("usages.gui"));
+        return cfg.getString("usages.gui");
     }
 
     @Override
     public boolean handler(CommandSender sender, String[] args) {
-        if(sender instanceof Player) {
+        if (sender instanceof Player) {
             Player p = (Player) sender;
             DropGUI dg = new DropGUI(p);
             dg.openGUI();
         } else {
-            sender.sendMessage(colorize(msg.getString("must-be-a-player")));
+            sender.sendMessage(msg.getString("must-be-a-player"));
         }
         return true;
-    }
-
-    private String colorize(String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
 }

@@ -174,7 +174,7 @@ public final class iDrop extends JavaPlugin implements Listener {
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Check if commands.yml has every command and extension in it. If has and it's common error to you, report it to developer!");
         }
-        getCommand("idrop-dis").setExecutor(new Disable());
+//        getCommand("idrop-dis").setExecutor(new Disable());
 
         // IDROP EXTENSIONS
 

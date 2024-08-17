@@ -1,12 +1,8 @@
 name: iDrop
 version: '${project.version}'
 main: pl.iddmsdev.idrop.iDrop
-api-version: 1.17
+api-version: 1.19
 authors: [ iddmsdev ]
 description: Plugin for drop from mobs and blocks
-website: iddmsdev.code-blue.pl
 
 commands:
-  idrop-dis:
-    permission: 'idrop.admin.dev'
-    permission-message: 'Used to disable iDrop plugin. Recommended only for devs!'

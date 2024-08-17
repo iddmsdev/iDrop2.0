@@ -68,8 +68,7 @@ public class DropGUI {
                 }
                 item = new ItemStack(mat, 1);
                 ItemMeta im = item.getItemMeta();
-                String name = col(
-                        cfg.getString("drop-item-name").replaceAll("%name%", drop));
+                String name = cfg.getString("drop-item-name").replaceAll("%name%", drop);
                 if (!name.equals("none")) im.setDisplayName(name);
                 List<String> lore = new ArrayList<>();
                 for (String line : cfg.getStringList("drop-item-lore")) {
@@ -87,7 +86,7 @@ public class DropGUI {
                             obtained = processListToReadFriendly(Collections.singletonList(dropConfig.getString(dpath + lobtained + ".items")));
                         }
                     } else {
-                        obtained = col(msg.getString("all-tools"));
+                        obtained = msg.getString("all-tools");
                     }
                     int min = 1;
                     if (dropConfig.contains(dpath + "count-min")) min = dropConfig.getInt(dpath + "count-min");
@@ -98,15 +97,14 @@ public class DropGUI {
                         line = line.replaceAll("%count%", String.valueOf(min));
                     } else {
                         line = line.replaceAll("%count%",
-                                col(msg.getString("from-x-to-y")).replaceAll("%x%", String.valueOf(min)).replaceAll("%y%", String.valueOf(max)));
+                                msg.getString("from-x-to-y")).replaceAll("%x%", String.valueOf(min)).replaceAll("%y%", String.valueOf(max));
                     }
-                    lore.add(
-                            col(line.
+                    lore.add(line.
                                     replaceAll("%chance%", dropConfig.getDouble(dpath + "chance") + "%").
                                     replaceAll("%from%", from).
                                     replaceAll("%count%", String.valueOf(amount)).
                                     replaceAll("%obtained%", obtained)
-                            ));
+                            );
                 }
                 im.setLore(lore);
                 NamespacedKey nKey = new NamespacedKey(iDrop.getPlugin(iDrop.class), "idrop-gui-action");
@@ -131,10 +129,7 @@ public class DropGUI {
                     }
                     return capitalized.trim();
                 })
-                .collect(Collectors.joining(col(msg.getString("friendly-list-separator"))));
+                .collect(Collectors.joining(msg.getString("friendly-list-separator")));
     }
 
-    private String col(String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
-    }
 }
