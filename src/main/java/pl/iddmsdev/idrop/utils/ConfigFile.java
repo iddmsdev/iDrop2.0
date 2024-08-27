@@ -11,20 +11,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
 public class ConfigFile {
     private final File file;
     private FileConfiguration cfg;
-    private final JavaPlugin plg;
     public ConfigFile(JavaPlugin plugin, String path) {
         this.file = new File(plugin.getDataFolder(), path);
         createIfDoesntExist(file, plugin, path);
-        this.plg = plugin;
     }
 
     private void createIfDoesntExist(File file, Plugin plg, String path) {
@@ -115,7 +112,7 @@ public class ConfigFile {
             return cfg.getStringList(path);
         } catch(NullPointerException | IllegalArgumentException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's a missing or invalid string list in " + file.getName() + ". Path: " + path);
-            return List.of("Error.");
+            return Collections.singletonList("Error.");
         }
     }
 
@@ -128,7 +125,7 @@ public class ConfigFile {
             return returnable;
         } catch(NullPointerException | IllegalArgumentException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's a missing or invalid string list in " + file.getName() + ". Path: " + path);
-            return List.of("Error.");
+            return Collections.singletonList("Error.");
         }
     }
 
@@ -158,12 +155,13 @@ public class ConfigFile {
         }
     }
 
+    @SuppressWarnings("unused")
     public List<Integer> getIntegerList(String path) {
         try {
             return cfg.getIntegerList(path);
         } catch(NullPointerException | IllegalArgumentException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's a missing or invalid int list in " + file.getName() + ". Path: " + path);
-            return List.of(0);
+            return Collections.singletonList(0);
         }
     }
 
@@ -180,13 +178,14 @@ public class ConfigFile {
             return cfg.getDoubleList(path);
         } catch(NullPointerException | IllegalArgumentException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's a missing or invalid double list in " + file.getName() + ". Path: " + path);
-            return List.of(0d);
+            return Collections.singletonList(0d);
         }
     }
 
     public String colorize(String msg) {
         try {
-            return ChatColor.translateAlternateColorCodes('&', msg);
+            if(msg!=null) return ChatColor.translateAlternateColorCodes('&', msg);
+            else return "";
         } catch(NullPointerException | IllegalArgumentException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "[iDrop] There's a missing string or list in " + file.getName() + ". Check this file for missing elements.");
             return "§cError.";

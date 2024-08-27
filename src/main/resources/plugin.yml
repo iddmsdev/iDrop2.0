@@ -3,6 +3,6 @@ version: '${project.version}'
 main: pl.iddmsdev.idrop.iDrop
 authors: [ iddmsdev ]
 description: Plugin for drop from mobs and blocks
-api-version: 1.13
+api-version: 1.17
 
 commands:

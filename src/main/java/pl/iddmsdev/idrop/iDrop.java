@@ -1,19 +1,13 @@
 package pl.iddmsdev.idrop;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandMap;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.iddmsdev.idrop.GUIs.actions.OpenAnotherGUI;
 import pl.iddmsdev.idrop.GUIs.actions.OpenGeneratorRecipeGUI;
@@ -21,9 +15,9 @@ import pl.iddmsdev.idrop.GUIs.actions.SendChatMessage;
 import pl.iddmsdev.idrop.GUIs.iDropGuiInterpreter;
 import pl.iddmsdev.idrop.commands.*;
 import pl.iddmsdev.idrop.drops.BlockDrop;
+import pl.iddmsdev.idrop.drops.MobDrop;
 import pl.iddmsdev.idrop.drops.gui.DropGUICommand;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
-import pl.iddmsdev.idrop.drops.MobDrop;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDropCommand;
 import pl.iddmsdev.idrop.generators.Generator;
 import pl.iddmsdev.idrop.generators.GeneratorBlocks;
@@ -32,9 +26,7 @@ import pl.iddmsdev.idrop.generators.GeneratorsDB;
 import pl.iddmsdev.idrop.generators.recipes.Recipe;
 import pl.iddmsdev.idrop.utils.ConfigFile;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,18 +56,12 @@ public final class iDrop extends JavaPlugin implements Listener {
     public static boolean mobDroppingDirectlyToInv;
     public static boolean expDroppingDirectlyToPlayer;
 
-    // todo:
-    // - on all commands replace Player p = (Player) sender; to this + check if sender is not player
-    // - remove all hardcoded messages (except logs)
-    // - reloady
-
-
     // NS - Null-Safe
 
     @Override
     public void onEnable() {
-        System.out.println("iDrop has just loaded ABV: 12");
-        System.out.println("iDrop enabled. I wish you a lot of diamonds!");
+        Bukkit.getLogger().info("iDrop has just loaded ABV: 13");
+        Bukkit.getLogger().info("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles();
         setupListeners();
@@ -101,7 +87,7 @@ public final class iDrop extends JavaPlugin implements Listener {
             megadropTimersYML.save(megadropTimersYML.getFile());
             Bukkit.getLogger().log(Level.INFO, "Megadrop timers saved.");
         }
-        System.out.println("iDrop disabled. Bye!");
+        Bukkit.getLogger().info("iDrop disabled. Bye!");
     }
 
     private void setupDBs() {
@@ -115,7 +101,6 @@ public final class iDrop extends JavaPlugin implements Listener {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (megadropTimersYML.contains(p.getUniqueId().toString())) {
                     try {
-                        //noinspection DataFlowIssue
                         MegaDrop.setPlayerTimer(p, (int) megadropTimersYML.get(p.getUniqueId().toString()));
                         continue;
                     } catch (Exception ex) {
@@ -173,23 +158,25 @@ public final class iDrop extends JavaPlugin implements Listener {
             commandMap.register(this.getName(), new iDropCommand(commandsYML.getRawString("idrop.label")));
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Check if commands.yml has every command and extension in it. If has and it's common error to you, report it to developer!");
+
+            // IDROP EXTENSIONS
+
+            ConfigFile cfg = commandsYML;
+
+            // if valid value in config is set:
+            iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", cfg.getRawString("help.label"), "all");
+            iDropCommand.setHelpCommand(helpCmd);
+            iDropCommand.registerExtension(helpCmd);
+            // end of if
+
+            if (generatorsYML.getBoolean("enabled"))
+                iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", cfg.getRawString("generators.label"), "idrop.generators.user"));
+            if (megadropYML.getBoolean("enabled"))
+                iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getRawString("megadrop.label"), "idrop.megadrop.user"));
+            iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getRawString("gui.label"), "idrop.gui"));
+            iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getRawString("reload.label"), "idrop.reload", cfg.getRawStringList("reload.aliases")));
+            iDropCommand.registerExtension(new VersionCommand("idrop:vercmd", cfg.getRawString("version.label"), "idrop.version", cfg.getRawStringList("version.aliases")));
         }
-//        getCommand("idrop-dis").setExecutor(new Disable());
-
-        // IDROP EXTENSIONS
-
-        ConfigFile cfg = commandsYML;
-
-        // if valid value in config is set:
-        iDropCommandExtension helpCmd = new HelpCommand("idrop:helpcmd", cfg.getRawString("help.label"), "all");
-        iDropCommand.setHelpCommand(helpCmd);
-        iDropCommand.registerExtension(helpCmd);
-        // end of if
-
-        if(generatorsYML.getBoolean("enabled")) iDropCommand.registerExtension(new GeneratorCommand("idrop:gencmd", cfg.getRawString("generators.label"), "idrop.generators.user"));
-        if(megadropYML.getBoolean("enabled")) iDropCommand.registerExtension(new MegaDropCommand("idrop:mdcmd", cfg.getRawString("megadrop.label"), "idrop.megadrop.user"));
-        iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getRawString("gui.label"), "idrop.gui"));
-        iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getRawString("reload.label"), "idrop.reload", cfg.getRawStringList("reload.aliases")));
     }
 
     private void setupListeners() {

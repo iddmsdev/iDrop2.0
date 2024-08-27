@@ -32,6 +32,10 @@ help:
 reload:
   label: 'reload'
   aliases:
+version:
+  label: 'version'
+  aliases:
+    - 'ver'
 # ARGUMENT EXTENSIONS (for example /idrop generators recipes, in this case 'recipes' is an argument.)
 
 # Generators
