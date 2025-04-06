@@ -35,9 +35,9 @@ public class MobDrop implements Listener {
                             ItemStack mainHand = e.getEntity().getKiller().getInventory().getItemInMainHand();
                             int amount = 1;
                             if (mainHand.hasItemMeta()) {
-                                if (mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS) > 0) {
-                                    amount = Fortune.modifyAmount(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS), 0);
-                                    chance = Fortune.modifyChance(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS), chance);
+                                if (mainHand.getEnchantmentLevel(Enchantment.LOOTING) > 0) {
+                                    amount = Fortune.modifyAmount(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOTING), 0);
+                                    chance = Fortune.modifyChance(path, "mobs", mainHand.getEnchantmentLevel(Enchantment.LOOTING), chance);
                                 }
                             }
                             Random rnd = new Random();

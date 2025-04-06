@@ -113,7 +113,7 @@ public class BlockDrop implements Listener {
                                         double chance = config.getDouble(fullpath + ".chance");
                                         ItemStack handItem = e.getPlayer().getInventory().getItemInMainHand();
                                         if(handItem.hasItemMeta()) {
-                                            int lvl = handItem.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_BLOCKS);
+                                            int lvl = handItem.getItemMeta().getEnchantLevel(Enchantment.FORTUNE);
                                             if(lvl>0) {
                                                 if(Fortune.hasFortuneModifier(path, "blocks")) {
                                                     chance = Fortune.modifyChance(path, "blocks", lvl, chance);

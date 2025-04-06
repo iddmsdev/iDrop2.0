@@ -31,9 +31,8 @@ public class GeneratorCore {
         meta.setLore(cfg.getStringList("lore").stream()
                 .map(s -> c(s.replaceAll("%level%", String.valueOf(level))))
                 .collect(Collectors.toList()));
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        if(cfg.getBoolean("glowing")) meta.setEnchantmentGlintOverride(true);
         core.setItemMeta(meta);
-        if(cfg.getBoolean("glowing")) core.addUnsafeEnchantment(Enchantment.LUCK, 1);
         return core;
     }
     private static String c(String m) {

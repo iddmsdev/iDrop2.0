@@ -49,11 +49,10 @@ public class Generator {
             }
             e.setLore(lore);
             e.setDisplayName(colorize(a.getString(path + "name")));
-            e.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            d.setItemMeta(e);
             if(a.getBoolean(path + "glowing")) {
-                d.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+                e.setEnchantmentGlintOverride(true);
             }
+            d.setItemMeta(e);
             return d;
         } catch(Exception ex) {
             Bukkit.getLogger().severe("[iDrop] Cannot create item of generator " + b + ". Check if 'item' value is real minecraft item");
