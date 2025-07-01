@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -11,18 +12,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import pl.iddmsdev.idrop.GUIs.actions.ToggleChatMessages;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
 import pl.iddmsdev.idrop.utils.ConfigFile;
 import pl.iddmsdev.idrop.utils.Miscellaneous;
-import pl.iddmsdev.idrop.utils.Prefabs;
+import pl.iddmsdev.system8.System8;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class BlockDrop implements Listener {
     ConfigFile config = iDrop.blocksYML;
@@ -32,6 +35,11 @@ public class BlockDrop implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         if (config.getBoolean("enabled")) {
             if (!e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                if(config.contains("dont-drop-defaults")) {
+                    for (String blocks : config.getRawStringList("dont-drop-defaults")) {
+                        if(blocks.toUpperCase().equals(e.getBlock().getType().toString())) e.setDropItems(false);
+                    }
+                }
                 for (String path : config.getConfigurationSection("drops").getKeys(false)) {
                     // DROP FROM SPECIFIED TOOLS
                     boolean pickaxesContinue;
@@ -117,16 +125,18 @@ public class BlockDrop implements Listener {
                                     } else {
                                         // SETUP ITEM
                                         // Material
-                                        Material itemMaterial;
-                                        try {
-                                            itemMaterial = Miscellaneous.tryToGetMaterial(config.getString(fullpath + ".item"));
-                                        } catch(IllegalArgumentException ex) {
-                                            itemMaterial = Material.STONE;
-                                            String epath = fullpath + ".item";
-                                            Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors w ith this item. Here's info:" +
-                                                    "File: " + config.getFile().getName() +
-                                                    "Path: " + epath.replaceAll("\\.", " -> "));
-                                            e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                                        Material itemMaterial = null;
+                                        if(!(config.getRawString(fullpath+".item").startsWith("$*") && config.getRawString(fullpath+".item").endsWith("$*"))) {
+                                            try {
+                                                itemMaterial = Miscellaneous.tryToGetMaterial(config.getString(fullpath + ".item"));
+                                            } catch (IllegalArgumentException ex) {
+                                                itemMaterial = Material.STONE;
+                                                String epath = fullpath + ".item";
+                                                Bukkit.getLogger().log(Level.SEVERE, "[iDrop] Check for any errors w ith this item. Here's info:" +
+                                                        "File: " + config.getFile().getName() +
+                                                        "Path: " + epath.replaceAll("\\.", " -> "));
+                                                e.getPlayer().sendMessage("§c[iDrop] Check console for errors.");
+                                            }
                                         }
                                         // Amount
                                         int amount;
@@ -164,7 +174,10 @@ public class BlockDrop implements Listener {
                                         }
                                         double choice = 100 * random.nextDouble();
                                         // Finish setup
-                                        ItemStack item = new ItemStack(itemMaterial, amount);
+                                        ItemStack item;
+                                        if(config.getRawString(fullpath+".item").startsWith("$*") && config.getRawString(fullpath+".item").endsWith("$*")) {
+                                          item = System8.getItem(config.getRawString(fullpath+".item")).getStack(amount);
+                                        } else item = new ItemStack(itemMaterial, amount);
                                         // SETUP DROP
                                         // Chance
                                         if (choice <= chance) {
@@ -187,10 +200,12 @@ public class BlockDrop implements Listener {
                                                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), item);
                                             }
                                             // Message
-                                            if (config.getString(fullpath + ".message") != null) {
-                                                // NS
-                                                e.getPlayer().sendMessage(
-                                                        ChatColor.translateAlternateColorCodes('&', config.getString(fullpath + ".message")));
+                                            if(!ToggleChatMessages.disablesDropMessages.contains(e.getPlayer().getUniqueId())) {
+                                                if (config.getString(fullpath + ".message") != null) {
+                                                    // NS
+                                                    e.getPlayer().sendMessage(
+                                                            ChatColor.translateAlternateColorCodes('&', config.getString(fullpath + ".message")));
+                                                }
                                             }
                                             // Experience
                                             e.setExpToDrop(0);
@@ -225,6 +240,21 @@ public class BlockDrop implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onExplode(EntityExplodeEvent event) {
+        Iterator<Block> iterator = event.blockList().iterator();
+        while (iterator.hasNext()) {
+            Set<Material> blocked = config.getRawStringList("dont-drop-defaults").stream().map(b -> Material.valueOf(b.toUpperCase())).collect(Collectors.toSet()); //todo still
+            Block block = iterator.next();
+
+            if (blocked.contains(block.getType())) {
+                block.setType(Material.AIR);
+                iterator.remove();
+            }
+        }
+    }
+
     public boolean hasAvailableSlot(Player player, ItemStack itemLookingFor) {
         Inventory inv = player.getInventory();
         ItemStack[] contents = inv.getContents();

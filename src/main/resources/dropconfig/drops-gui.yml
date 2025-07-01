@@ -30,10 +30,11 @@ variables:
     #   - '&bTest2' (Line 2)
     glowing: false # Is item glowing (like with enchants)? (OPTIONAL, DEFAULT: FALSE)
     action: 'none' # Actions explaining what to do after item was clicked. (OPTIONAL, DEFAULT: 'none')
-    # There are currently 3 global actions (and 1 local, explained in gen-gui.yml)
+    # There are currently 3 global actions (and 2 local, one explained in gen-gui.yml and one here)
     # - 'none': After clicking the item, it'll change nothing.
     # - 'open-internal-gui': After clicking the item, it'll open another gui (only target is specified in same file), specialized in action-data (look below)
     # - 'send-chat-message': After clicking the item, it'll close menu and send specified chat message to player.
+    # - 'toggle-chat-messages': After clicking the item, it'll toggle player's drop chat messages (LOCAL)
     # action-data: (this is also commented, because of usage) - Additional information to action ('none' does not require any data) (REQUIRED, if action needs this)
     # if action is 'open-internal-gui', the action data will look like this:
     # - 'target' <- The line 1 is where you specify your target GUI, just type here unique id.
@@ -42,6 +43,9 @@ variables:
     # if action is 'send-chat-message', the action data will look like this:
     #   - 'line1'
     #   - 'line2' and as much as you want, these lines are simply messages.
+    # if action is 'toggle-chat-messages', the action data will look like this:
+    #   enable-text: 'text' <- Name of an item when messages are disabled
+    #   disable-text: 'text' <- Name of an item when messages are enabled
 
     # All of this information can be used in guis -> gui -> items
 
@@ -171,4 +175,9 @@ guis:
       53:
         var: 'background'
       54:
-        var: 'background'
+        item: 'paper'
+        # you can't put 'name' variable here.
+        action: 'toggle-chat-messages'
+        action-data:
+          enable-text: '&a&lEnable chat messages'
+          disable-text: '&c&lDisable chat messages'

@@ -36,6 +36,11 @@ version:
   label: 'version'
   aliases:
     - 'ver'
+messages: # Toggle messages displayed after drop, if they exist
+  enabled: true # You can simply disable it if you want (works only for this command)
+  label: 'messages'
+  aliases:
+    - 'msg'
 # ARGUMENT EXTENSIONS (for example /idrop generators recipes, in this case 'recipes' is an argument.)
 
 # Generators

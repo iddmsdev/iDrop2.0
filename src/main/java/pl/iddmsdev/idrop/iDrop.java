@@ -60,7 +60,7 @@ public final class iDrop extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("iDrop has just loaded ABV: 13");
+        Bukkit.getLogger().info("iDrop has just loaded ABV: 15-R");
         Bukkit.getLogger().info("iDrop enabled. I wish you a lot of diamonds!");
         dataFolder = this.getDataFolder();
         setupConfigFiles();
@@ -158,7 +158,7 @@ public final class iDrop extends JavaPlugin implements Listener {
             commandMap.register(this.getName(), new iDropCommand(commandsYML.getRawString("idrop.label")));
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot register main commands. Check if commands.yml has every command and extension in it. If has and it's common error to you, report it to developer!");
-
+        }
             // IDROP EXTENSIONS
 
             ConfigFile cfg = commandsYML;
@@ -176,7 +176,6 @@ public final class iDrop extends JavaPlugin implements Listener {
             iDropCommand.registerExtension(new DropGUICommand("idrop:dguicmd", cfg.getRawString("gui.label"), "idrop.gui"));
             iDropCommand.registerExtension(new ReloadCommand("idrop:reload", cfg.getRawString("reload.label"), "idrop.reload", cfg.getRawStringList("reload.aliases")));
             iDropCommand.registerExtension(new VersionCommand("idrop:vercmd", cfg.getRawString("version.label"), "idrop.version", cfg.getRawStringList("version.aliases")));
-        }
     }
 
     private void setupListeners() {

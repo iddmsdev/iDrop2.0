@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import pl.iddmsdev.idrop.GUIs.actions.ToggleChatMessages;
 import pl.iddmsdev.idrop.drops.megadrop.MegaDrop;
 import pl.iddmsdev.idrop.iDrop;
 import pl.iddmsdev.idrop.utils.ConfigFile;
@@ -169,9 +170,12 @@ public class MobDrop implements Listener {
                                             e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), item);
                                         }
                                         // message
-                                        if (config.getString(drop + "message") != null) {
-                                            e.getEntity().getKiller().sendMessage(
-                                                    ChatColor.translateAlternateColorCodes('&', config.getString(drop + "message")));
+                                        if(!ToggleChatMessages.disablesDropMessages.contains(e.getEntity().getKiller().getUniqueId())) {
+                                            if (config.getString(drop + ".message") != null) {
+                                                // NS
+                                                e.getEntity().getKiller().sendMessage(
+                                                        ChatColor.translateAlternateColorCodes('&', config.getString(drop + ".message")));
+                                            }
                                         }
                                         // experience
                                         e.setDroppedExp(0);
